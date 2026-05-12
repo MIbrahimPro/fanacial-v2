@@ -1,0 +1,99 @@
+import 'package:hive/hive.dart';
+
+class StatEntry {
+  final String id;
+  final String cardType;
+  final String name;
+  final double amount;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final String syncStatus;
+
+  const StatEntry({
+    required this.id,
+    required this.cardType,
+    required this.name,
+    required this.amount,
+    required this.createdAt,
+    required this.updatedAt,
+    this.syncStatus = 'pending',
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'cardType': cardType,
+        'name': name,
+        'amount': amount,
+        'createdAt': createdAt.toIso8601String(),
+        'updatedAt': updatedAt.toIso8601String(),
+        'syncStatus': syncStatus,
+      };
+
+  factory StatEntry.fromJson(Map<String, dynamic> json) => StatEntry(
+        id: json['id'] as String,
+        cardType: json['cardType'] as String,
+        name: json['name'] as String,
+        amount: (json['amount'] as num).toDouble(),
+        createdAt: DateTime.parse(json['createdAt'] as String),
+        updatedAt: DateTime.parse(json['updatedAt'] as String),
+        syncStatus: json['syncStatus'] as String? ?? 'pending',
+      );
+
+  StatEntry copyWith({
+    String? id,
+    String? cardType,
+    String? name,
+    double? amount,
+    DateTime? createdAt,
+    DateTime? updatedAt,
+    String? syncStatus,
+  }) =>
+      StatEntry(
+        id: id ?? this.id,
+        cardType: cardType ?? this.cardType,
+        name: name ?? this.name,
+        amount: amount ?? this.amount,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        syncStatus: syncStatus ?? this.syncStatus,
+      );
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is StatEntry && id == other.id;
+
+  @override
+  int get hashCode => id.hashCode;
+}
+
+class StatEntryAdapter extends TypeAdapter<StatEntry> {
+  @override
+  final int typeId = 1;
+
+  @override
+  StatEntry read(BinaryReader reader) {
+    final fields = reader.readMap().cast<int, dynamic>();
+    return StatEntry(
+      id: fields[0] as String,
+      cardType: fields[1] as String,
+      name: fields[2] as String,
+      amount: (fields[3] as num).toDouble(),
+      createdAt: DateTime.fromMillisecondsSinceEpoch(fields[4] as int),
+      updatedAt: DateTime.fromMillisecondsSinceEpoch(fields[5] as int),
+      syncStatus: fields[6] as String? ?? 'pending',
+    );
+  }
+
+  @override
+  void write(BinaryWriter writer, StatEntry obj) {
+    writer.writeMap({
+      0: obj.id,
+      1: obj.cardType,
+      2: obj.name,
+      3: obj.amount,
+      4: obj.createdAt.millisecondsSinceEpoch,
+      5: obj.updatedAt.millisecondsSinceEpoch,
+      6: obj.syncStatus,
+    });
+  }
+}

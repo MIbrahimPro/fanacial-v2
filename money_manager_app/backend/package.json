@@ -1,0 +1,10 @@
+{
+  "name": "money-manager-backend",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vercel serverless backend for Money Manager App",
+  "dependencies": {
+    "pg": "^8.13.0",
+    "uuid": "^10.0.0"
+  }
+}

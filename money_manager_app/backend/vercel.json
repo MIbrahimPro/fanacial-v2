@@ -1,0 +1,21 @@
+{
+  "version": 2,
+  "functions": {
+    "api/*.js": {
+      "maxDuration": 10
+    }
+  },
+  "rewrites": [
+    { "source": "/api/transactions", "destination": "/api/transactions" },
+    { "source": "/api/transactions/(.*)", "destination": "/api/transaction" },
+    { "source": "/api/stat-entries", "destination": "/api/stat-entries" },
+    { "source": "/api/stat-entries/(.*)", "destination": "/api/stat-entry" },
+    { "source": "/api/people", "destination": "/api/people" },
+    { "source": "/api/people/(.*)", "destination": "/api/person" },
+    { "source": "/api/loans", "destination": "/api/loans" },
+    { "source": "/api/loans/(.*)", "destination": "/api/loan" },
+    { "source": "/api/tags", "destination": "/api/tags" },
+    { "source": "/api/tags/(.*)", "destination": "/api/tag" },
+    { "source": "/api/sync", "destination": "/api/sync" }
+  ]
+}

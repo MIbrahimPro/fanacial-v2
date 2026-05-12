@@ -1,0 +1,12 @@
+# Secrets
+neon thingies
+# Flutter
+money_manager_app/build/
+money_manager_app/.dart_tool/
+money_manager_app/android/app/build/
+money_manager_app/android/.gradle/
+# Node
+money_manager_app/backend/node_modules/
+# IDE
+.idea/
+*.swp

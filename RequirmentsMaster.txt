@@ -1,0 +1,157 @@
+the app is for personal use, 
+no one else will use it or anything 
+
+
+My devices are android and linux (zorinOS)
+
+I want the backend to run on Vercel, 
+the database to be some free one like neon,, or mongodb, or something
+(you might suggest supabase,,, it is not good, as it only allows 2 projects, and I already hit the limit)
+
+I want the app to run offline 
+
+here are the requirements, 
+
+It is a money manager
+
+the app will have a bottom bar for navigation on the bottom, 
+and for desktop, it can be something else, 
+
+the theme can be like, 
+yellow creamy and font can be like Artisitic, 
+feel should be fast, snappy, and clean minimal
+there can also be a dark mode
+
+It will have the following pages (give them better names)
+settings page, 
+stats page 
+dashboard page
+loans manager page
+monthly tracker page
+
+now for each page
+> monthly tracker page, 
+it will be divided into 2 parts, 
+upper part and lower part
+upper part will have a very clean graph
+the graph will be like some custom thingy 
+I will give the AI a reference picture for that 
+the graph should have controls to adjust current month and view previous months too
+and other controls too
+
+the lower part will have a table/list with a good style and everything 
+the Table will basically show incoming and out going money sorted earliest first
+we can add 
+the adding will be 2 types(2 buttons),, 1 will be to add incoming and 1 for outgoing
+
+the adding will work as follows
+you click a good looking add button to open a page, 
+this page will take name, description (optional), amount , tag, (with a shortcut to manage tags) 
+and then we can click add and it will be added
+
+the UI will show incoming in blue, and outgoing in red, 
+
+the table will not show description, until we click on a entry,, then it will expand showing the full description under it, 
+And clicking on another closes the first one and opens the other
+
+you can long click one to open it's page,,, which will have it's full details,, and you can click edit, to edit it, or delete to delete (after confirmation)
+
+    Stats Manager
+    The data on this page is totally independant on what is going on in the monthly tracker page
+    this page will have 4 blocks / cards
+    Assets, Liabilities, Income, Expenses
+
+inside each card will be a list, 
+with an add button
+Adding on a card will add to the list, 
+it will have a Name, and amount
+
+each card will show the list, 
+we can scroll the list, 
+the card will also show a prominent total 
+text color for the prominent total will be according to card
+
+long click on a list entry to edit,, or delete
+
+then there will be a net total, 
+which will be outside all cards and will be the sum of all cards
+
+    loans Manager
+    This page is also totally independant of all other pages
+    this page will have upper and lower section 
+    upper section will
+    (on phone it will be this way,,, on desktop,, it can be different)
+    have a right and left section
+    left section will have 2 cards stacked up and down, 
+    up one will show total given and the down one will show total taken 
+    then the right side will show the sum of both as net 
+
+the bottom section will show people, 
+you can add and delete edit people, 
+people will have just 1 infomation,,, name,
+and by default will show net outcome for that person 0 
+you can click on 1 person to open it
+it opens a page where you see net total for that person and a list of loans taken and lent, (use easier words)
+and you can basically add entry for the person 
+which will involve amount, name and description, 
+it will add to the person's total net 
+And then that sub total is then used for the loan page top section calculation 
+
+you can also edit delete etc
+
+    Dashboard page will have basically a graphical representation and etc
+    3 sections
+    monthly tracker, 
+    stats, and loans
+    each with a summary and etc
+    clicking on one takes to it's page, 
+    And like 
+    it will be like a dashboard page
+
+    Settings page
+
+it will allow us to manage theme
+And 
+sync (comming up )
+
+And 
+tags
+tags will show as pills, 
+you can edits tags here, 
+manage tags> you can add edit delete tags, 
+while creating , you have to give it a name and a color, 
+color selector will have default 12 colors,,, plus a hex input, 
+you can select any or use custom hex for it
+
+(the text on top of the tag will be white or black,, depending on the hsl's light value,,, so contrast remains valid)
+
+Oauth behaviour
+I am the only one using the app
+so 
+make it so that default app has sync off, 
+to turn it on,, or to manually sync,,, you have to enter a 4 digit pin, 
+the pin gets you a token for a whole year
+and it works good,,, until no token found or like,,, token expires,, which asks for pin again 
+,,, because well, security,,, but still,,, i am the only one
+
+Sync behaviour
+Only I will be using it, 
+So dont go too complex on this
+
+but basically 
+the idea is, 
+I will run it on zorin OS and android, 
+I should be able to run the full app, on the device, offline
+and 
+when I turn online
+the app just syncs it's data to the server, 
+and also fetch to get latest data,
+if I use it online,,, as soon as I make a change, it tries to update it online too
+if I use it offline, it stores it offline, and then just pushes it online when I get coverage, 
+
+I can also go to settings page and manually click sync , to sync up and then pull latest data.. you can also turn on or off auto sync behaviour
+
+the sync should be like a simple latest change wins kinda thingy 
+
+All functionalities work offline 
+but you can sync using the internet easily etc
