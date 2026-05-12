@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../models/person.dart';
 import '../providers/loans_provider.dart';
+import '../widgets/empty_state.dart';
 import 'loans_manager/pages/add_person_dialog.dart';
 import 'loans_manager/widgets/loans_summary_cards.dart';
 import 'loans_manager/widgets/person_list_item.dart';
@@ -48,16 +49,11 @@ class LoansManagerScreen extends StatelessWidget {
               elevation: 1,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               clipBehavior: Clip.antiAlias,
-              child: persons.isEmpty
-                  ? Padding(
-                      padding: const EdgeInsets.all(32),
-                      child: Center(
-                        child: Text(
-                          'No people yet.\nAdd one to start tracking loans.',
-                          textAlign: TextAlign.center,
-                          style: theme.textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                        ),
-                      ),
+              child              : persons.isEmpty
+                  ? const EmptyState(
+                      icon: Icons.people_outline,
+                      title: 'No people yet',
+                      subtitle: 'Add someone to start tracking loans.',
                     )
                   : Column(
                       children: persons.map((person) {

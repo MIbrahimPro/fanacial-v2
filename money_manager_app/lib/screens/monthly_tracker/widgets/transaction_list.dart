@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../../models/index.dart';
 import '../../../providers/monthly_tracker_provider.dart';
+import '../../../widgets/empty_state.dart';
 import 'transaction_list_item.dart';
 
 class TransactionList extends StatefulWidget {
@@ -22,17 +23,10 @@ class _TransactionListState extends State<TransactionList> {
     final tags = provider.tags;
 
     if (transactions.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 32),
-          child: Text(
-            'No transactions for this month.\nTap + to add one.',
-            textAlign: TextAlign.center,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: Colors.grey,
-                ),
-          ),
-        ),
+      return EmptyState(
+        icon: Icons.receipt_long_outlined,
+        title: 'No transactions yet',
+        subtitle: 'Tap + to add your first income or outgoing.',
       );
     }
 

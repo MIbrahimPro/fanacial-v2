@@ -10,6 +10,13 @@ class AppTheme {
   static const Color darkSurface = Color(0xFF2d2d2d);
   static const Color darkCard = Color(0xFF333333);
 
+  static const _pageTransitions = PageTransitionsTheme(
+    builders: {
+      TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+      TargetPlatform.linux: CupertinoPageTransitionsBuilder(),
+    },
+  );
+
   static ThemeData get lightTheme => ThemeData(
         useMaterial3: true,
         brightness: Brightness.light,
@@ -73,6 +80,7 @@ class AppTheme {
             ),
           ),
         ),
+        pageTransitionsTheme: _pageTransitions,
       );
 
   static ThemeData get darkTheme => ThemeData(
@@ -138,5 +146,6 @@ class AppTheme {
             ),
           ),
         ),
+        pageTransitionsTheme: _pageTransitions,
       );
 }

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../models/stat_entry.dart';
 import '../../../providers/stats_provider.dart';
+import '../../../widgets/empty_state.dart';
 
 class StatsCard extends StatelessWidget {
   final String cardType;
@@ -56,13 +57,12 @@ class StatsCard extends StatelessWidget {
             ),
           ),
           if (entries.isEmpty)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-              child: Text(
-                'No entries',
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: Colors.grey,
-                    ),
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 8),
+              child: EmptyState(
+                icon: Icons.playlist_add_outlined,
+                title: 'No entries',
+                subtitle: '',
               ),
             )
           else

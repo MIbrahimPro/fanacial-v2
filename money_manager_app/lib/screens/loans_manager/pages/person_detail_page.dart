@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 
 import '../../../models/index.dart';
 import '../../../providers/loans_provider.dart';
+import '../../../widgets/empty_state.dart';
 import 'add_loan_modal.dart';
 import 'add_person_dialog.dart';
 
@@ -101,12 +102,10 @@ class PersonDetailPage extends StatelessWidget {
           const Divider(height: 1),
           Expanded(
             child: loans.isEmpty
-                ? Center(
-                    child: Text(
-                      'No loans yet.\nTap + to add one.',
-                      textAlign: TextAlign.center,
-                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Colors.grey),
-                    ),
+                ? const EmptyState(
+                    icon: Icons.swap_horiz_outlined,
+                    title: 'No loans yet',
+                    subtitle: 'Tap + to add a give or take entry.',
                   )
                 : ListView.builder(
                     itemCount: loans.length,

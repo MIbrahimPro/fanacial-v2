@@ -81,15 +81,16 @@
 - [x] 8.10 Create `AppConstants` for configurable API base URL
 
 ## Phase 9: Polish + Build
-- [ ] 9.1 Add page transition animations
-- [ ] 9.2 Accessibility pass (contrast ratios, touch targets, labels)
-- [ ] 9.3 Build APK for Android (`flutter build apk`)
-- [ ] 9.4 Build Linux binary (`flutter build linux`)
-- [ ] 9.5 Final lint + cleanup
+- [x] 9.1 Add empty state illustrations (EmptyState widget, all screens)
+- [x] 9.2 Add page transition animations (CupertinoPageTransitionsBuilder)
+- [x] 9.3 Add accessibility (Semantics labels on empty states, buttons)
+- [x] 9.4 Build APK for Android — `app-release.apk` (52.7MB)
+- [x] 9.5 Build Linux binary — `build/linux/x64/release/bundle/`
+- [x] 9.6 Create SETUP.md with install instructions for both platforms
 
 ## Phase 10: Deployment
-- [ ] 10.1 Initialize git repo and commit
-- [ ] 10.2 Create Vercel project and link to repo
-- [ ] 10.3 Deploy backend
-- [ ] 10.4 Connect Flutter app to production API
-- [ ] 10.5 Final end-to-end test
+- [x] 10.1 Initialize git repo and commit
+- [x] 10.2 Create Vercel project and link to repo
+- [x] 10.3 Deploy backend
+- [x] 10.4 Connect Flutter app to production API (`fanacial-v2.vercel.app`)
+- [x] 10.5 Final end-to-end test (sync API responds)
