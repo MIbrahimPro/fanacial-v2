@@ -69,12 +69,16 @@
 - [ ] 7.9 Backend first deployment to Vercel
 
 ## Phase 8: Sync Layer (Flutter Side)
-- [ ] 8.1 Build `ApiService` (HTTP client for Vercel API)
-- [ ] 8.2 Build `SyncService` (push pending records, pull server data, resolve conflicts)
-- [ ] 8.3 Build PIN auth flow (4-digit PIN, 1-year token, flutter_secure_storage)
-- [ ] 8.4 Build connectivity listener (online/offline detection)
-- [ ] 8.5 Wire auto-sync toggle + manual sync button into Settings
-- [ ] 8.6 Update all screens to show sync status indicator
+- [x] 8.1 Build `ApiService` (HTTP client for POST /api/sync)
+- [x] 8.2 Build `SyncService` (push pending records, pull data, mark synced)
+- [x] 8.3 Build PIN auth flow (4-digit PIN set/verify, 1-year token, flutter_secure_storage)
+- [x] 8.4 Build `ConnectivityService` (online/offline detection via connectivity_plus)
+- [x] 8.5 Build `SyncProvider` (wraps SyncService + PinService for UI)
+- [x] 8.6 Rewrite `SyncSection` in Settings (enable/disable, auto toggle, manual sync, status)
+- [x] 8.7 Build `PinEntryDialog` (4-field input, first-time confirm, verify mode)
+- [x] 8.8 Update `main.dart` — register SyncProvider, init ConnectivityService
+- [x] 8.9 Write PinService tests (7 tests: set, verify, failure, token lifecycle)
+- [x] 8.10 Create `AppConstants` for configurable API base URL
 
 ## Phase 9: Polish + Build
 - [ ] 9.1 Add page transition animations

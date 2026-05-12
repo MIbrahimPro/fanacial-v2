@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
 import 'providers/loans_provider.dart';
 import 'providers/monthly_tracker_provider.dart';
 import 'providers/navigation_provider.dart';
 import 'providers/stats_provider.dart';
+import 'providers/sync_provider.dart';
 import 'providers/theme_provider.dart';
+import 'services/api_service.dart';
+import 'services/connectivity_service.dart';
 import 'services/hive_initializer.dart';
+import 'services/pin_service.dart';
 import 'services/storage_service.dart';
+import 'services/sync_service.dart';
 import 'utils/app_theme.dart';
+import 'utils/constants.dart';
 import 'screens/dashboard_screen.dart';
 import 'screens/loans_manager/pages/person_detail_page.dart';
 import 'screens/monthly_tracker/pages/transaction_detail_page.dart';
@@ -25,6 +32,9 @@ void main() async {
   final initialTheme =
       settings.theme == 'dark' ? ThemeMode.dark : ThemeMode.light;
 
+  final connectivityService = ConnectivityService();
+  await connectivityService.init();
+
   runApp(
     MultiProvider(
       providers: [
@@ -36,6 +46,15 @@ void main() async {
         ChangeNotifierProvider(create: (_) => LoansProvider()),
         ChangeNotifierProvider(create: (_) => NavigationProvider()),
         Provider.value(value: StorageService.instance),
+        Provider.value(value: connectivityService),
+        ChangeNotifierProvider(create: (_) {
+          final api = ApiService(AppConstants.apiBaseUrl);
+          final pin = PinService(FlutterSecureStorage());
+          final sync = SyncService(api, connectivityService, pin);
+          final sp = SyncProvider(sync, pin);
+          sp.init();
+          return sp;
+        }),
       ],
       child: const MoneyManagerApp(),
     ),
