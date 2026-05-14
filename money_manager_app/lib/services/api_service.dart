@@ -3,22 +3,44 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class ApiService {
-  static const String apiSecret = 'mm-sync-secret-k7F9xP2q';
-
   final String baseUrl;
+  String? _token;
 
   ApiService(this.baseUrl);
 
+  void setToken(String? token) => _token = token;
+
   Map<String, String> get _headers => {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer $apiSecret',
+        if (_token != null) 'Authorization': 'Bearer $_token',
       };
+
+  Future<String> login(String pin) async {
+    final uri = Uri.parse('$baseUrl/api/login');
+    final response = await http.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'pin': pin}),
+    );
+
+    final data = jsonDecode(response.body);
+    if (data['success'] == true) {
+      final token = data['token'] as String;
+      setToken(token);
+      return token;
+    } else {
+      throw ApiException(data['error'] ?? 'Login failed');
+    }
+  }
 
   Future<Map<String, dynamic>> sync({
     String? lastSync,
     Map<String, List<Map<String, dynamic>>>? records,
   }) async {
+    if (_token == null) throw ApiException('Not logged in');
+    
     final uri = Uri.parse('$baseUrl/api/sync');
+...
     final body = <String, dynamic>{};
     if (lastSync != null) body['last_sync'] = lastSync;
     if (records != null) body['records'] = records;

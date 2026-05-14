@@ -19,18 +19,16 @@ class SyncProvider extends ChangeNotifier {
   SyncProvider(this._syncService, this._pinService);
 
   Future<void> init() async {
-    _hasPin = await _pinService.hasPin();
-    final valid = await _pinService.isTokenValid();
-    _syncEnabled = valid;
+    final token = await _pinService.getToken();
+    _syncEnabled = token != null;
+    _hasPin = true; // Pin is seeded on server, so we always "have" a way to sync
     notifyListeners();
   }
 
-  Future<bool> setPin(String pin) async {
+  Future<bool> loginAndEnable(String pin) async {
     try {
-      await _pinService.setPin(pin);
-      await _pinService.generateToken();
+      await _syncService.login(pin);
       _syncEnabled = true;
-      _hasPin = true;
       notifyListeners();
       return true;
     } catch (e) {
@@ -38,19 +36,9 @@ class SyncProvider extends ChangeNotifier {
     }
   }
 
-  Future<bool> verifyPinAndEnable(String pin) async {
-    final ok = await _pinService.verifyPin(pin);
-    if (!ok) return false;
-    await _pinService.generateToken();
-    _syncEnabled = true;
-    notifyListeners();
-    return true;
-  }
-
   Future<void> disableSync() async {
-    await _pinService.disableSync();
+    await _pinService.clearToken();
     _syncEnabled = false;
-    _hasPin = await _pinService.hasPin();
     notifyListeners();
   }
 
@@ -66,6 +54,9 @@ class SyncProvider extends ChangeNotifier {
       notifyListeners();
       return null;
     } catch (e) {
+      if (e.toString().contains('AUTH_REQUIRED')) {
+        return 'AUTH_REQUIRED';
+      }
       return e.toString();
     }
   }

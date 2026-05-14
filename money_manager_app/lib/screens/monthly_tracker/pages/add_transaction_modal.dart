@@ -82,7 +82,7 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       child: Form(
         key: _formKey,
@@ -169,7 +169,10 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
             ),
             const SizedBox(height: 8),
             TextButton.icon(
-              onPressed: () => Navigator.pushNamed(context, '/settings'),
+              onPressed: () {
+                Navigator.pop(context);
+                context.read<NavigationProvider>().goToTab(4); // Settings tab
+              },
               icon: const Icon(Icons.tune, size: 16),
               label: const Text('Manage Tags'),
               style: TextButton.styleFrom(
@@ -183,7 +186,7 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.incomeBlue,
+                  backgroundColor: AppTheme.incomeBlue, // Changed from AppColors.incomeBlue
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),

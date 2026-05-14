@@ -24,11 +24,20 @@ class MonthlyTrackerScreen extends StatelessWidget {
             child: CustomScrollView(
               slivers: [
                 SliverToBoxAdapter(
-                  child: CustomMonthlyGraph(
-                    dailyData: provider.dailyData,
-                    daysInMonth: DateHelpers.daysInMonth(
-                      provider.currentMonth.year,
-                      provider.currentMonth.month,
+                  child: GestureDetector(
+                    onHorizontalDragEnd: (details) {
+                      if (details.primaryVelocity! > 0) {
+                        provider.goToPreviousMonth();
+                      } else if (details.primaryVelocity! < 0) {
+                        provider.goToNextMonth();
+                      }
+                    },
+                    child: CustomMonthlyGraph(
+                      dailyData: provider.dailyData,
+                      daysInMonth: DateHelpers.daysInMonth(
+                        provider.currentMonth.year,
+                        provider.currentMonth.month,
+                      ),
                     ),
                   ),
                 ),

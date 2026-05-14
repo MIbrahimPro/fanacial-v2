@@ -92,5 +92,23 @@
 - [x] 10.1 Initialize git repo and commit
 - [x] 10.2 Create Vercel project and link to repo
 - [x] 10.3 Deploy backend
-- [x] 10.4 Connect Flutter app to production API (`fanacial-v2.vercel.app`)
+- [x] 10.4 Connect Flutter app to production API (`financial-v2.vercel.app`)
 - [x] 10.5 Final end-to-end test (sync API responds)
+
+## Phase 11: Improvements & Fixes (May 2026)
+- [x] 11.1 Increase theme color saturation
+- [x] 11.2 Fix transaction sorting (newest first)
+- [x] 11.3 Move Stats page net total to top
+- [x] 11.4 Implement Bento grid layout for Loans summary
+- [x] 11.5 Refactor Monthly Tracker graph to line chart (cumulative net)
+- [x] 11.6 Fix keyboard overlap in modals (SingleChildScrollView)
+- [x] 11.7 Fix Manage Tags redirection
+- [x] 11.8 Move person actions to AppBar in Loans detail
+- [x] 11.9 Refactor loan history items (long press actions, title row description)
+- [x] 11.10 Refactor Sync to use JWT and DB-stored PIN
+- [x] 11.11 Improve online/offline detection (real host lookup)
+- [x] 11.12 Add swiping gestures (tabs and months)
+- [x] 11.13 Add initial loading spinner
+- [x] 11.14 Improve Dashboard visuals (Net Worth card)
+- [x] 11.15 Add Stats Comparison Bar
+- [x] 11.16 Desktop polish (sidebar, fonts, right-click)

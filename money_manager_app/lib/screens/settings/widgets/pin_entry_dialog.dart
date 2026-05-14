@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 
 class PinEntryDialog extends StatefulWidget {
-  final bool isFirstTime;
-
-  const PinEntryDialog({super.key, this.isFirstTime = false});
+  const PinEntryDialog({super.key});
 
   @override
   State<PinEntryDialog> createState() => _PinEntryDialogState();
@@ -13,9 +11,6 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
   final _controllers = List.generate(4, (_) => TextEditingController());
   final _focusNodes = List.generate(4, (_) => FocusNode());
   String? _error;
-  String? _confirmedPin;
-
-  bool get _isFirstTime => widget.isFirstTime;
 
   @override
   void dispose() {
@@ -33,22 +28,12 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
     final theme = Theme.of(context);
 
     return AlertDialog(
-      title: Text(
-        _confirmedPin != null
-            ? 'Confirm PIN'
-            : _isFirstTime
-                ? 'Set PIN'
-                : 'Enter PIN',
-      ),
+      title: const Text('Enter PIN'),
       content: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            _confirmedPin != null
-                ? 'Re-enter your 4-digit PIN'
-                : _isFirstTime
-                    ? 'Set a 4-digit PIN for sync'
-                    : 'Enter your 4-digit PIN to enable sync',
+            'Enter your 4-digit PIN to enable sync',
             style: theme.textTheme.bodySmall,
             textAlign: TextAlign.center,
           ),
@@ -81,6 +66,9 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
                     if (v.isNotEmpty && i < 3) {
                       _focusNodes[i + 1].requestFocus();
                     }
+                    if (v.isNotEmpty && i == 3) {
+                      _submit();
+                    }
                     setState(() {
                       _error = null;
                     });
@@ -106,7 +94,7 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
         ),
         ElevatedButton(
           onPressed: _submit,
-          child: Text(_confirmedPin != null ? 'Confirm' : 'Continue'),
+          child: const Text('Continue'),
         ),
       ],
     );
@@ -117,31 +105,6 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
     if (pin.length != 4) {
       setState(() => _error = 'Enter all 4 digits');
       return;
-    }
-
-    if (_isFirstTime && _confirmedPin == null) {
-      setState(() {
-        _confirmedPin = pin;
-        _error = null;
-        for (final c in _controllers) {
-          c.clear();
-        }
-        _focusNodes[0].requestFocus();
-      });
-      return;
-    }
-
-    if (_isFirstTime && _confirmedPin != null) {
-      if (pin != _confirmedPin) {
-        setState(() {
-          _error = 'PINs do not match';
-          for (final c in _controllers) {
-            c.clear();
-          }
-          _focusNodes[0].requestFocus();
-        });
-        return;
-      }
     }
 
     Navigator.pop(context, pin);

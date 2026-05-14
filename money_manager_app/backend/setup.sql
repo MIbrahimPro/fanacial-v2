@@ -7,6 +7,15 @@ DROP TABLE IF EXISTS people CASCADE;
 DROP TABLE IF EXISTS stat_entries CASCADE;
 DROP TABLE IF EXISTS transactions CASCADE;
 DROP TABLE IF EXISTS tags CASCADE;
+DROP TABLE IF EXISTS users CASCADE;
+
+CREATE TABLE users (
+  id UUID PRIMARY KEY,
+  pin_hash TEXT NOT NULL,
+  last_login TIMESTAMPTZ
+);
+
+INSERT INTO users (id, pin_hash) VALUES ('00000000-0000-0000-0000-000000000000', '1965'); -- Placeholder, will be hashed later or used as is for now as per "seed the pin '1965'"
 
 CREATE TABLE tags (
   id UUID PRIMARY KEY,

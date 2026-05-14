@@ -72,10 +72,12 @@ class SyncSection extends StatelessWidget {
               title: const Text('Sync Now'),
               enabled: !provider.isSyncing,
               onTap: () async {
-                final error = await provider.syncNow();
-                if (error != null && context.mounted) {
+                final result = await provider.syncNow();
+                if (result == 'AUTH_REQUIRED') {
+                  if (context.mounted) _handlePin(context);
+                } else if (result != null && context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text('Sync failed: $error')),
+                    SnackBar(content: Text('Sync failed: $result')),
                   );
                 } else if (context.mounted) {
                   ScaffoldMessenger.of(context).showSnackBar(
@@ -125,30 +127,22 @@ class SyncSection extends StatelessWidget {
     final provider = context.read<SyncProvider>();
     if (!context.mounted) return;
 
-    if (provider.hasPin) {
-      final pin = await showDialog<String>(
-        context: context,
-        builder: (_) => const PinEntryDialog(),
+    final pin = await showDialog<String>(
+      context: context,
+      builder: (_) => const PinEntryDialog(),
+    );
+    if (pin == null || !context.mounted) return;
+    
+    final ok = await provider.loginAndEnable(pin);
+    if (!ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Incorrect PIN or Server Error')),
       );
-      if (pin == null || !context.mounted) return;
-      final ok = await provider.verifyPinAndEnable(pin);
-      if (!ok && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Incorrect PIN')),
-        );
-      }
-    } else {
-      final pin = await showDialog<String>(
-        context: context,
-        builder: (_) => const PinEntryDialog(isFirstTime: true),
+    } else if (ok && context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Sync enabled')),
       );
-      if (pin == null || !context.mounted) return;
-      final ok = await provider.setPin(pin);
-      if (!ok && context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to set PIN')),
-        );
-      }
+      provider.syncNow();
     }
   }
 

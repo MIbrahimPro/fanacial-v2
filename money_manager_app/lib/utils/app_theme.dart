@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
 class AppTheme {
-  static const Color creamyYellow = Color(0xFFFFF8DC);
-  static const Color creamyYellowLight = Color(0xFFFFFACD);
+  static const Color creamyYellow = Color(0xFFFFF4D2); // Increased saturation from 0xFFFFF8DC
+  static const Color creamyYellowLight = Color(0xFFFFF9C4); // Increased saturation from 0xFFFFFACD
   static const Color accentGold = Color(0xFFFFD700);
   static const Color incomeBlue = Color(0xFF4A90D9);
   static const Color outgoingRed = Color(0xFFE74C3C);
@@ -27,11 +27,22 @@ class AppTheme {
           surface: Colors.white,
           onSurface: Colors.black87,
         ),
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
           backgroundColor: creamyYellowLight,
           foregroundColor: Colors.black87,
           elevation: 0,
           centerTitle: true,
+          titleTextStyle: const TextStyle(
+            fontFamily: 'Outfit',
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.black87,
+          ),
+        ),
+        textTheme: const TextTheme(
+          titleLarge: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700),
+          titleMedium: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600),
+          titleSmall: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600),
         ),
         cardTheme: CardThemeData(
           color: Colors.white,
@@ -93,11 +104,22 @@ class AppTheme {
           surface: darkSurface,
           onSurface: Colors.white,
         ),
-        appBarTheme: const AppBarTheme(
+        appBarTheme: AppBarTheme(
           backgroundColor: darkSurface,
           foregroundColor: Colors.white,
           elevation: 0,
           centerTitle: true,
+          titleTextStyle: const TextStyle(
+            fontFamily: 'Outfit',
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: Colors.white,
+          ),
+        ),
+        textTheme: const TextTheme(
+          titleLarge: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w700, color: Colors.white),
+          titleMedium: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600, color: Colors.white),
+          titleSmall: TextStyle(fontFamily: 'Outfit', fontWeight: FontWeight.w600, color: Colors.white),
         ),
         cardTheme: CardThemeData(
           color: darkCard,

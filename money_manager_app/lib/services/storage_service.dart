@@ -55,7 +55,7 @@ class StorageService {
     return _txBox.values
         .where((t) => t.date.year == year && t.date.month == month)
         .toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
+      ..sort((a, b) => b.date.compareTo(a.date));
   }
 
   List<Transaction> getTransactionsByDateRange(
@@ -65,7 +65,7 @@ class StorageService {
             t.date.isAfter(start.subtract(const Duration(days: 1))) &&
             t.date.isBefore(end.add(const Duration(days: 1))))
         .toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
+      ..sort((a, b) => b.date.compareTo(a.date));
   }
 
   List<Transaction> getRecentTransactions(int count) {
@@ -98,7 +98,7 @@ class StorageService {
 
   List<Transaction> getTransactionsByTag(String tagId) {
     return _txBox.values.where((t) => t.tagId == tagId).toList()
-      ..sort((a, b) => a.date.compareTo(b.date));
+      ..sort((a, b) => b.date.compareTo(a.date));
   }
 
   Future<void> updateTransaction(Transaction tx) async {

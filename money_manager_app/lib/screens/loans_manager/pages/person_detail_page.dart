@@ -39,7 +39,39 @@ class PersonDetailPage extends StatelessWidget {
     final balanceColor = balance >= 0 ? Colors.green : const Color(0xFFE74C3C);
 
     return Scaffold(
-      appBar: AppBar(title: Text(person.name)),
+      appBar: AppBar(
+        title: Text(person.name),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (val) {
+              if (val == 'edit') _editPerson(context, person);
+              if (val == 'delete') _deletePerson(context, person);
+            },
+            itemBuilder: (ctx) => [
+              const PopupMenuItem(
+                value: 'edit',
+                child: Row(
+                  children: [
+                    Icon(Icons.edit_outlined, size: 20),
+                    SizedBox(width: 12),
+                    Text('Rename'),
+                  ],
+                ),
+              ),
+              PopupMenuItem(
+                value: 'delete',
+                child: Row(
+                  children: [
+                    Icon(Icons.delete_outline, size: 20, color: Colors.red),
+                    SizedBox(width: 12),
+                    Text('Delete', style: TextStyle(color: Colors.red)),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
       body: Column(
         children: [
           Card(
@@ -77,24 +109,10 @@ class PersonDetailPage extends StatelessWidget {
                         fontWeight: FontWeight.w600,
                       ),
                 ),
-                Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit_outlined, size: 18),
-                      onPressed: () => _editPerson(context, person),
-                      tooltip: 'Rename',
-                    ),
-                    IconButton(
-                      icon: Icon(Icons.delete_outline, size: 18, color: Colors.red.shade400),
-                      onPressed: () => _deletePerson(context, person),
-                      tooltip: 'Delete',
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.add_circle_outline, size: 22),
-                      onPressed: () => AddLoanModal.show(context, personId: personId),
-                      tooltip: 'Add Loan',
-                    ),
-                  ],
+                IconButton(
+                  icon: const Icon(Icons.add_circle_outline, size: 22),
+                  onPressed: () => AddLoanModal.show(context, personId: personId),
+                  tooltip: 'Add Loan',
                 ),
               ],
             ),
@@ -180,71 +198,108 @@ class _LoanItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ExpansionTile(
-      tilePadding: const EdgeInsets.symmetric(horizontal: 16),
-      childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
-      title: Row(
-        children: [
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-            decoration: BoxDecoration(
-              color: amountColor.withValues(alpha: 0.15),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Text(
-              loan.type == 'given' ? 'Give' : 'Take',
-              style: TextStyle(
-                color: amountColor,
-                fontSize: 11,
-                fontWeight: FontWeight.w600,
+    return GestureDetector(
+      onLongPress: () => _showActions(context),
+      onSecondaryTap: () => _showActions(context),
+      child: ExpansionTile(
+        tilePadding: const EdgeInsets.symmetric(horizontal: 16),
+        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+        title: Row(
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: amountColor.withValues(alpha: 0.15),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                loan.type == 'given' ? 'Give' : 'Take',
+                style: TextStyle(
+                  color: amountColor,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-          ),
-          const SizedBox(width: 12),
-          Text(
-            dateFmt.format(loan.date),
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
-          ),
-          const Spacer(),
-          Text(
-            '$sign\$${fmt.format(loan.amount)}',
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: amountColor,
-                  fontWeight: FontWeight.w600,
-                  fontFeatures: const [FontFeature.tabularFigures()],
-                ),
-          ),
-        ],
-      ),
-      children: [
-        if (loan.description != null && loan.description!.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.only(bottom: 8),
-            child: Text(
-              loan.description!,
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: Colors.grey.shade600,
-                    fontStyle: FontStyle.italic,
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    loan.description != null && loan.description!.isNotEmpty
+                        ? loan.description!
+                        : (loan.type == 'given' ? 'Money Given' : 'Money Taken'),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
-            ),
-          ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            TextButton.icon(
-              onPressed: () => AddLoanModal.show(context, personId: loan.personId, editLoan: loan),
-              icon: const Icon(Icons.edit, size: 14),
-              label: const Text('Edit', style: TextStyle(fontSize: 12)),
+                  Text(
+                    dateFmt.format(loan.date),
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(color: Colors.grey),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(width: 8),
-            TextButton.icon(
-              onPressed: () => _delete(context),
-              icon: Icon(Icons.delete, size: 14, color: Colors.red.shade400),
-              label: Text('Delete', style: TextStyle(fontSize: 12, color: Colors.red.shade400)),
+            Text(
+              '$sign\$${fmt.format(loan.amount)}',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: amountColor,
+                    fontWeight: FontWeight.w600,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
             ),
           ],
         ),
-      ],
+        children: [
+          if (loan.description != null && loan.description!.isNotEmpty)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                loan.description!,
+                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.grey.shade600,
+                    ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  void _showActions(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ListTile(
+              leading: const Icon(Icons.edit_outlined),
+              title: const Text('Edit Entry'),
+              onTap: () {
+                Navigator.pop(ctx);
+                AddLoanModal.show(context, personId: loan.personId, editLoan: loan);
+              },
+            ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline, color: Colors.red),
+              title: const Text('Delete Entry', style: TextStyle(color: Colors.red)),
+              onTap: () {
+                Navigator.pop(ctx);
+                _delete(context);
+              },
+            ),
+            const SizedBox(height: 8),
+          ],
+        ),
+      ),
     );
   }
 

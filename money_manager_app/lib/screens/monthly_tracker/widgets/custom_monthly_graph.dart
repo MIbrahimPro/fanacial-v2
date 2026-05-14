@@ -15,7 +15,8 @@ class CustomMonthlyGraph extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    final computedMax = _computeMax();
+    final cumulativeData = _computeCumulativeData();
+    final yRange = _computeYRange(cumulativeData);
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -35,10 +36,11 @@ class CustomMonthlyGraph extends StatelessWidget {
                   ),
                 )
               : CustomPaint(
-                  painter: _MonthlyGraphPainter(
-                    dailyData: dailyData,
+                  painter: _MonthlyLineGraphPainter(
+                    cumulativeData: cumulativeData,
                     daysInMonth: daysInMonth,
-                    maxValue: computedMax,
+                    yMin: yRange['min']!,
+                    yMax: yRange['max']!,
                     isDarkMode: isDark,
                   ),
                   size: const Size(double.infinity, 200),
@@ -48,36 +50,56 @@ class CustomMonthlyGraph extends StatelessWidget {
     );
   }
 
-  double _computeMax() {
-    if (dailyData.isEmpty) return 1;
-    double max = 0;
-    for (final day in dailyData.values) {
-      final total = (day['income'] ?? 0) + (day['outgoing'] ?? 0);
-      if (total > max) max = total;
+  Map<int, double> _computeCumulativeData() {
+    final result = <int, double>{};
+    double current = 0;
+    for (int i = 1; i <= daysInMonth; i++) {
+      final day = dailyData[i];
+      if (day != null) {
+        current += (day['income'] ?? 0) - (day['outgoing'] ?? 0);
+      }
+      result[i] = current;
     }
-    return max > 0 ? max * 1.2 : 1;
+    return result;
+  }
+
+  Map<String, double> _computeYRange(Map<int, double> data) {
+    if (data.isEmpty) return {'min': 0, 'max': 100};
+    double minV = 0;
+    double maxV = 0;
+    for (final v in data.values) {
+      if (v < minV) minV = v;
+      if (v > maxV) maxV = v;
+    }
+    
+    // Add some padding
+    final range = maxV - minV;
+    final padding = range == 0 ? 100.0 : range * 0.2;
+    return {
+      'min': minV - padding,
+      'max': maxV + padding,
+    };
   }
 }
 
-class _MonthlyGraphPainter extends CustomPainter {
-  final Map<int, Map<String, double>> dailyData;
+class _MonthlyLineGraphPainter extends CustomPainter {
+  final Map<int, double> cumulativeData;
   final int daysInMonth;
-  final double maxValue;
+  final double yMin;
+  final double yMax;
   final bool isDarkMode;
 
-  _MonthlyGraphPainter({
-    required this.dailyData,
+  _MonthlyLineGraphPainter({
+    required this.cumulativeData,
     required this.daysInMonth,
-    required this.maxValue,
+    required this.yMin,
+    required this.yMax,
     required this.isDarkMode,
   });
 
-  static const incomeColor = Color(0xFF4A90D9);
-  static const outgoingColor = Color(0xFFE74C3C);
-
   @override
   void paint(Canvas canvas, Size size) {
-    const leftPad = 44.0;
+    const leftPad = 48.0;
     const rightPad = 12.0;
     const topPad = 8.0;
     const bottomPad = 32.0;
@@ -86,91 +108,88 @@ class _MonthlyGraphPainter extends CustomPainter {
     final chartHeight = size.height - topPad - bottomPad;
     if (chartWidth <= 0 || chartHeight <= 0) return;
 
-    final gridColor =
-        isDarkMode ? Colors.grey.shade700 : Colors.grey.shade200;
-    final textColor =
-        isDarkMode ? Colors.white70 : Colors.black54;
-    final gridPaint = Paint()
-      ..color = gridColor
-      ..strokeWidth = 0.5;
-    final zeroPaint = Paint()
-      ..color = isDarkMode ? Colors.grey.shade600 : Colors.grey.shade400
-      ..strokeWidth = 1;
-
+    final gridColor = isDarkMode ? Colors.grey.shade800 : Colors.grey.shade200;
+    final textColor = isDarkMode ? Colors.white70 : Colors.black54;
+    
+    // Draw Y axis labels and grid
     final yLabels = _generateYLabels();
-    for (final yl in yLabels) {
-      final y = topPad + chartHeight * (1 - yl.ratio);
+    for (final label in yLabels) {
+      final y = _getYPos(label.value, chartHeight) + topPad;
       canvas.drawLine(
         Offset(leftPad, y),
         Offset(size.width - rightPad, y),
-        yl.ratio == 0 ? zeroPaint : gridPaint,
+        Paint()..color = gridColor..strokeWidth = 0.5,
       );
-      _drawText(
-        canvas,
-        yl.label,
-        Offset(leftPad - 6, y - 7),
-        textColor,
-        10,
-        TextAlign.right,
+      _drawText(canvas, label.label, Offset(leftPad - 6, y - 7), textColor, 9, TextAlign.right);
+    }
+
+    // Draw Zero line
+    if (yMin < 0 && yMax > 0) {
+      final zeroY = _getYPos(0, chartHeight) + topPad;
+      canvas.drawLine(
+        Offset(leftPad, zeroY),
+        Offset(size.width - rightPad, zeroY),
+        Paint()..color = isDarkMode ? Colors.grey.shade600 : Colors.grey.shade400..strokeWidth = 1,
       );
     }
 
-    final slotWidth = chartWidth / daysInMonth;
-    const barWidth = 8.0;
-    const barGap = 2.0;
+    final slotWidth = chartWidth / (daysInMonth - 1);
+    final path = Path();
+    final fillPath = Path();
+    
+    bool first = true;
+    for (int i = 1; i <= daysInMonth; i++) {
+      final x = leftPad + (i - 1) * slotWidth;
+      final val = cumulativeData[i] ?? 0;
+      final y = _getYPos(val, chartHeight) + topPad;
 
-    for (int day = 1; day <= daysInMonth; day++) {
-      final x = leftPad + (day - 1) * slotWidth + slotWidth / 2;
-
-      final dayData = dailyData[day];
-      final income = dayData?['income'] ?? 0;
-      final outgoing = dayData?['outgoing'] ?? 0;
-
-      if (income > 0) {
-        final barH = (income / maxValue) * chartHeight;
-        _drawBar(canvas, x - barWidth / 2 - barGap / 2, barWidth, barH,
-            topPad + chartHeight, incomeColor);
+      if (first) {
+        path.moveTo(x, y);
+        fillPath.moveTo(x, _getYPos(0, chartHeight) + topPad);
+        fillPath.lineTo(x, y);
+        first = false;
+      } else {
+        path.lineTo(x, y);
+        fillPath.lineTo(x, y);
       }
-      if (outgoing > 0) {
-        final barH = (outgoing / maxValue) * chartHeight;
-        _drawBar(canvas, x + barGap / 2, barWidth, barH,
-            topPad + chartHeight, outgoingColor);
-      }
-
-      if (day % 5 == 1 || day == daysInMonth) {
-        _drawText(
-          canvas,
-          '$day',
-          Offset(x - 6, topPad + chartHeight + 4),
-          textColor,
-          9,
-          TextAlign.center,
-        );
+      
+      // X labels
+      if (i % 5 == 1 || i == daysInMonth) {
+        _drawText(canvas, '$i', Offset(x - 6, topPad + chartHeight + 6), textColor, 9, TextAlign.center);
       }
     }
+
+    // Draw fill
+    fillPath.lineTo(leftPad + (daysInMonth - 1) * slotWidth, _getYPos(0, chartHeight) + topPad);
+    fillPath.close();
+    
+    final accentColor = const Color(0xFFFFD700);
+    canvas.drawPath(fillPath, Paint()..shader = LinearGradient(
+      begin: Alignment.topCenter,
+      end: Alignment.bottomCenter,
+      colors: [accentColor.withValues(alpha: 0.3), accentColor.withValues(alpha: 0.0)],
+    ).createShader(Rect.fromLTWH(leftPad, topPad, chartWidth, chartHeight)));
+
+    // Draw line
+    canvas.drawPath(path, Paint()
+      ..color = accentColor
+      ..strokeWidth = 2.5
+      ..style = PaintingStyle.stroke
+      ..strokeCap = StrokeCap.round
+      ..strokeJoin = StrokeJoin.round);
 
     _drawLegend(canvas, size, textColor);
   }
 
-  void _drawBar(Canvas canvas, double x, double width, double height,
-      double bottom, Color color) {
-    final rect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(x, bottom - height, width, height),
-      const Radius.circular(3),
-    );
-      canvas.drawRRect(
-        rect,
-        Paint()..color = color.withValues(alpha: 0.85),
-      );
+  double _getYPos(double val, double chartHeight) {
+    final range = yMax - yMin;
+    if (range == 0) return chartHeight / 2;
+    return chartHeight * (1 - (val - yMin) / range);
   }
 
-  void _drawText(Canvas canvas, String text, Offset offset, Color color,
-      double fontSize, TextAlign align) {
+  void _drawText(Canvas canvas, String text, Offset offset, Color color, double fontSize, TextAlign align) {
     final tp = TextPainter(
-      text: TextSpan(
-        text: text,
-        style: TextStyle(color: color, fontSize: fontSize),
-      ),
+      text: TextSpan(text: text, style: TextStyle(color: color, fontSize: fontSize)),
       textDirection: TextDirection.ltr,
       textAlign: align,
     )..layout();
@@ -180,24 +199,21 @@ class _MonthlyGraphPainter extends CustomPainter {
   void _drawLegend(Canvas canvas, Size size, Color textColor) {
     const legendY = 190.0;
     const startX = 16.0;
+    final accentColor = const Color(0xFFFFD700);
 
-    canvas.drawCircle(const Offset(startX, legendY), 4, Paint()..color = incomeColor);
-    _drawText(canvas, 'Income', const Offset(startX + 10, legendY - 7), textColor, 10,
-        TextAlign.left);
-
-    canvas.drawCircle(
-        const Offset(startX + 70, legendY), 4, Paint()..color = outgoingColor);
-    _drawText(canvas, 'Outgoing', const Offset(startX + 80, legendY - 7), textColor, 10,
-        TextAlign.left);
+    canvas.drawLine(Offset(startX, legendY), Offset(startX + 15, legendY), Paint()..color = accentColor..strokeWidth = 2);
+    _drawText(canvas, 'Net Balance', const Offset(startX + 20, legendY - 7), textColor, 10, TextAlign.left);
   }
 
   List<_YLabel> _generateYLabels() {
-    if (maxValue <= 0) return [];
-    final step = _niceStep(maxValue / 4);
+    final range = yMax - yMin;
+    if (range <= 0) return [];
+    final step = _niceStep(range / 4);
     final labels = <_YLabel>[];
-    double v = 0;
-    while (v <= maxValue + 0.01) {
-      labels.add(_YLabel(v, _formatAmount(v), v / max(0.01, maxValue)));
+    
+    double v = (yMin / step).ceil() * step;
+    while (v <= yMax) {
+      labels.add(_YLabel(v, _formatAmount(v)));
       v += step;
     }
     return labels;
@@ -207,35 +223,32 @@ class _MonthlyGraphPainter extends CustomPainter {
     final exp = (log(raw) / ln10).floor();
     final frac = raw / pow(10, exp);
     double nice;
-    if (frac <= 1.5) {
-      nice = 1;
-    } else if (frac <= 3.5) {
-      nice = 2;
-    } else if (frac <= 7.5) {
-      nice = 5;
-    } else {
-      nice = 10;
-    }
+    if (frac <= 1.5) nice = 1;
+    else if (frac <= 3.5) nice = 2;
+    else if (frac <= 7.5) nice = 5;
+    else nice = 10;
     return nice * pow(10, exp);
   }
 
   String _formatAmount(double v) {
-    if (v >= 1000000) return '${(v / 1000000).toStringAsFixed(1)}M';
-    if (v >= 1000) return '${(v / 1000).toStringAsFixed(0)}K';
-    return v.toStringAsFixed(0);
+    final absV = v.abs();
+    String s;
+    if (absV >= 1000000) s = '${(absV / 1000000).toStringAsFixed(1)}M';
+    else if (absV >= 1000) s = '${(absV / 1000).toStringAsFixed(0)}K';
+    else s = absV.toStringAsFixed(0);
+    return v < 0 ? '-$s' : s;
   }
 
   @override
-  bool shouldRepaint(covariant _MonthlyGraphPainter oldDelegate) =>
-      oldDelegate.dailyData != dailyData ||
-      oldDelegate.maxValue != maxValue ||
+  bool shouldRepaint(covariant _MonthlyLineGraphPainter oldDelegate) =>
+      oldDelegate.cumulativeData != cumulativeData ||
+      oldDelegate.yMin != yMin ||
+      oldDelegate.yMax != yMax ||
       oldDelegate.isDarkMode != isDarkMode;
 }
 
 class _YLabel {
   final double value;
   final String label;
-  final double ratio;
-
-  _YLabel(this.value, this.label, this.ratio);
+  _YLabel(this.value, this.label);
 }

@@ -28,8 +28,8 @@ class TransactionListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final isIncome = transaction.type == 'income';
     final amountColor = isIncome
-        ? AppColors.incomeBlue
-        : AppColors.outgoingRed;
+        ? const Color(0xFF4A90D9)
+        : const Color(0xFFE74C3C);
     final sign = isIncome ? '+' : '-';
     final formattedDate = DateFormat('d MMM').format(transaction.date);
     final formattedAmount = NumberFormat('#,##0.00').format(transaction.amount);
@@ -37,6 +37,7 @@ class TransactionListItem extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       onLongPress: onLongPress,
+      onSecondaryTap: onLongPress,
       child: AnimatedSize(
         duration: const Duration(milliseconds: 200),
         curve: Curves.easeInOut,
@@ -203,9 +204,4 @@ class _ActionChip extends StatelessWidget {
       ),
     );
   }
-}
-
-class AppColors {
-  static const incomeBlue = Color(0xFF4A90D9);
-  static const outgoingRed = Color(0xFFE74C3C);
 }

@@ -61,12 +61,44 @@ void main() async {
   );
 }
 
-class MoneyManagerApp extends StatelessWidget {
+class MoneyManagerApp extends StatefulWidget {
   const MoneyManagerApp({super.key});
+
+  @override
+  State<MoneyManagerApp> createState() => _MoneyManagerAppState();
+}
+
+class _MoneyManagerAppState extends State<MoneyManagerApp> {
+  bool _initialized = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _init();
+  }
+
+  Future<void> _init() async {
+    await context.read<SyncProvider>().init();
+    setState(() => _initialized = true);
+  }
 
   @override
   Widget build(BuildContext context) {
     final themeMode = context.watch<ThemeProvider>().themeMode;
+
+    if (!_initialized) {
+      return MaterialApp(
+        debugShowCheckedModeBanner: false,
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: themeMode,
+        home: const Scaffold(
+          body: Center(
+            child: CircularProgressIndicator(color: AppTheme.accentGold),
+          ),
+        ),
+      );
+    }
 
     return MaterialApp(
       title: 'Money Manager',
@@ -89,8 +121,15 @@ class MoneyManagerApp extends StatelessWidget {
   }
 }
 
-class MainShell extends StatelessWidget {
+class MainShell extends StatefulWidget {
   const MainShell({super.key});
+
+  @override
+  State<MainShell> createState() => _MainShellState();
+}
+
+class _MainShellState extends State<MainShell> {
+  late PageController _pageController;
 
   static const _screens = [
     DashboardScreen(),
@@ -109,8 +148,31 @@ class MainShell extends StatelessWidget {
   ];
 
   @override
+  void initState() {
+    super.initState();
+    final initialIndex = context.read<NavigationProvider>().currentIndex;
+    _pageController = PageController(initialPage: initialIndex);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final currentIndex = context.watch<NavigationProvider>().currentIndex;
+    final navigationProvider = context.watch<NavigationProvider>();
+    final currentIndex = navigationProvider.currentIndex;
+
+    // Sync PageController with NavigationProvider
+    if (_pageController.hasClients && _pageController.page?.round() != currentIndex) {
+      _pageController.animateToPage(
+        currentIndex,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    }
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -123,16 +185,17 @@ class MainShell extends StatelessWidget {
               if (isWide)
                 NavigationRail(
                   selectedIndex: currentIndex,
-                  onDestinationSelected: (i) =>
-                      context.read<NavigationProvider>().goToTab(i),
+                  onDestinationSelected: (i) {
+                    navigationProvider.goToTab(i);
+                    _pageController.jumpToPage(i);
+                  },
                   labelType: NavigationRailLabelType.all,
-                  leading: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8),
-                    child: Icon(
-                      Icons.account_balance_wallet,
-                      size: 28,
-                      color: AppTheme.accentGold,
-                    ),
+                  backgroundColor: themeMode == ThemeMode.dark ? AppTheme.darkSurface : AppTheme.creamyYellowLight,
+                  useIndicator: true,
+                  indicatorColor: AppTheme.accentGold.withValues(alpha: 0.2),
+                  leading: const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 20),
+                    child: _HexagonDollarIcon(),
                   ),
                   destinations: const [
                     NavigationRailDestination(
@@ -162,15 +225,27 @@ class MainShell extends StatelessWidget {
                     ),
                   ],
                 ),
-              Expanded(child: _screens[currentIndex]),
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: (i) => navigationProvider.goToTab(i),
+                  children: _screens,
+                ),
+              ),
             ],
           ),
           bottomNavigationBar: isWide
               ? null
               : NavigationBar(
                   selectedIndex: currentIndex,
-                  onDestinationSelected: (i) =>
-                      context.read<NavigationProvider>().goToTab(i),
+                  onDestinationSelected: (i) {
+                    navigationProvider.goToTab(i);
+                    _pageController.animateToPage(
+                      i,
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                    );
+                  },
                   destinations: const [
                     NavigationDestination(
                       icon: Icon(Icons.dashboard_outlined),
@@ -201,6 +276,39 @@ class MainShell extends StatelessWidget {
                 ),
         );
       },
+    );
+  }
+}
+
+class _HexagonDollarIcon extends StatelessWidget {
+  const _HexagonDollarIcon();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 44,
+      height: 44,
+      decoration: BoxDecoration(
+        color: AppTheme.accentGold,
+        shape: BoxShape.circle,
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.accentGold.withValues(alpha: 0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: const Center(
+        child: Text(
+          '\$',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.w900,
+            color: Colors.black,
+          ),
+        ),
+      ),
     );
   }
 }

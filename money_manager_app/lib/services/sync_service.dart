@@ -40,13 +40,20 @@ class SyncService extends ChangeNotifier {
     notifyListeners();
   }
 
+  Future<void> login(String pin) async {
+    final token = await _api.login(pin);
+    await _pinService.saveToken(token);
+    notifyListeners();
+  }
+
   Future<void> syncNow() async {
     if (_isSyncing) return;
 
-    final token = await _pinService.getToken();
+    String? token = await _pinService.getToken();
     if (token == null) {
-      throw StateError('Sync not authorized — enter PIN first');
+      throw StateError('AUTH_REQUIRED');
     }
+    _api.setToken(token);
 
     _isSyncing = true;
     notifyListeners();
@@ -66,6 +73,10 @@ class SyncService extends ChangeNotifier {
     } catch (e) {
       _isSyncing = false;
       notifyListeners();
+      if (e is ApiException && e.message.contains('Unauthorized')) {
+        await _pinService.clearToken();
+        throw StateError('AUTH_REQUIRED');
+      }
       rethrow;
     }
   }

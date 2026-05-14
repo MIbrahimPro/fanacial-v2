@@ -72,7 +72,7 @@ class _AddLoanModalState extends State<AddLoanModal> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       child: Form(
         key: _formKey,

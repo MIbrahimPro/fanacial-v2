@@ -19,31 +19,36 @@ class LoansSummaryCards extends StatelessWidget {
     return LayoutBuilder(
       builder: (context, constraints) {
         final isWide = constraints.maxWidth > 500;
+        final cards = [
+          _Card(label: 'Given', amount: given, color: const Color(0xFFFFD700), fmt: fmt),
+          _Card(label: 'Taken', amount: taken, color: const Color(0xFFE74C3C), fmt: fmt),
+          _Card(label: 'Net', amount: net, color: netColor, fmt: fmt, isFullHeight: true),
+        ];
+
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: isWide
-              ? Row(
-                  children: [
-                    Expanded(child: _Card(label: 'Given', amount: given, color: const Color(0xFFFFD700), fmt: fmt)),
-                    const SizedBox(width: 8),
-                    Expanded(child: _Card(label: 'Taken', amount: taken, color: const Color(0xFFE74C3C), fmt: fmt)),
-                    const SizedBox(width: 8),
-                    Expanded(child: _Card(label: 'Net', amount: net, color: netColor, fmt: fmt)),
-                  ],
-                )
-              : Column(
-                  children: [
-                    Row(
-                      children: [
-                        Expanded(child: _Card(label: 'Given', amount: given, color: const Color(0xFFFFD700), fmt: fmt)),
-                        const SizedBox(width: 8),
-                        Expanded(child: _Card(label: 'Taken', amount: taken, color: const Color(0xFFE74C3C), fmt: fmt)),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    _Card(label: 'Net', amount: net, color: netColor, fmt: fmt),
-                  ],
+          child: IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: Column(
+                    children: [
+                      Expanded(child: cards[0]),
+                      const SizedBox(height: 4),
+                      Expanded(child: cards[1]),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 4),
+                Expanded(
+                  flex: 1,
+                  child: cards[2],
+                ),
+              ],
+            ),
+          ),
         );
       },
     );
@@ -55,23 +60,29 @@ class _Card extends StatelessWidget {
   final double amount;
   final Color color;
   final NumberFormat fmt;
+  final bool isFullHeight;
 
   const _Card({
     required this.label,
     required this.amount,
     required this.color,
     required this.fmt,
+    this.isFullHeight = false,
   });
 
   @override
   Widget build(BuildContext context) {
     return Card(
+      margin: EdgeInsets.zero,
       elevation: 1,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-      child: Padding(
+      child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        alignment: isFullHeight ? Alignment.centerLeft : null,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: isFullHeight ? MainAxisSize.max : MainAxisSize.min,
+          mainAxisAlignment: isFullHeight ? MainAxisAlignment.center : MainAxisAlignment.start,
           children: [
             Text(
               label,
@@ -85,6 +96,7 @@ class _Card extends StatelessWidget {
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
                     color: color,
                     fontWeight: FontWeight.w700,
+                    fontSize: isFullHeight ? 24 : 18,
                     fontFeatures: const [FontFeature.tabularFigures()],
                   ),
             ),

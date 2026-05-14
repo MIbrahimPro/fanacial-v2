@@ -36,19 +36,17 @@ class PinService {
   }
 
   Future<String?> getToken() async {
-    final valid = await isTokenValid();
-    if (!valid) return null;
     return await _storage.read(key: _tokenKey);
   }
 
-  Future<void> generateToken() async {
-    final token = 'mm-sync-secret-k7F9xP2q';
-    final expiry = DateTime.now().add(const Duration(days: 365));
+  Future<void> saveToken(String token) async {
     await _storage.write(key: _tokenKey, value: token);
+    // JWT usually has its own expiry, but we can also store one if needed
+    final expiry = DateTime.now().add(const Duration(days: 365));
     await _storage.write(key: _expiryKey, value: expiry.toIso8601String());
   }
 
-  Future<void> disableSync() async {
+  Future<void> clearToken() async {
     await _storage.delete(key: _tokenKey);
     await _storage.delete(key: _expiryKey);
   }

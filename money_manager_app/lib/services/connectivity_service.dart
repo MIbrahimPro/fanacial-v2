@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
 
@@ -20,8 +21,19 @@ class ConnectivityService {
     _subscription = _connectivity.onConnectivityChanged.listen(_updateStatus);
   }
 
-  void _updateStatus(List<ConnectivityResult> results) {
-    final online = results.any((r) => r != ConnectivityResult.none);
+  void _updateStatus(List<ConnectivityResult> results) async {
+    final hasInterface = results.any((r) => r != ConnectivityResult.none);
+    bool online = false;
+    
+    if (hasInterface) {
+      try {
+        final result = await InternetAddress.lookup('google.com').timeout(const Duration(seconds: 3));
+        online = result.isNotEmpty && result[0].rawAddress.isNotEmpty;
+      } catch (_) {
+        online = false;
+      }
+    }
+
     if (online != _lastOnline) {
       _lastOnline = online;
       _controller.add(online);

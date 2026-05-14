@@ -263,7 +263,7 @@ class _AddStatModalState extends State<AddStatModal> {
     final cardType = widget.initialCardType ?? widget.editEntry?.cardType ?? 'assets';
     final cardTitle = _cardTitle(cardType);
 
-    return Padding(
+    return SingleChildScrollView(
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       child: Form(
         key: _formKey,
