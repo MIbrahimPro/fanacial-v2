@@ -10,3 +10,4 @@ money_manager_app/backend/node_modules/
 # IDE
 .idea/
 *.swp
+.vercel
