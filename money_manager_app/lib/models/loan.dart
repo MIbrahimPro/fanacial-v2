@@ -55,6 +55,15 @@ class Loan {
     throw FormatException('Invalid amount value: $value');
   }
 
+  static double _parseHiveAmount(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    return 0;
+  }
+
   Loan copyWith({
     String? id,
     String? personId,
@@ -96,7 +105,7 @@ class LoanAdapter extends TypeAdapter<Loan> {
     return Loan(
       id: fields[0] as String,
       personId: fields[1] as String,
-      amount: (fields[2] as num).toDouble(),
+      amount: Loan._parseHiveAmount(fields[2]),
       type: fields[3] as String,
       description: fields[4] as String?,
       date: DateTime.fromMillisecondsSinceEpoch(fields[5] as int),

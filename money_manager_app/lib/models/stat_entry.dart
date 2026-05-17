@@ -47,6 +47,15 @@ class StatEntry {
     throw FormatException('Invalid amount value: $value');
   }
 
+  static double _parseHiveAmount(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    return 0;
+  }
+
   StatEntry copyWith({
     String? id,
     String? cardType,
@@ -85,7 +94,7 @@ class StatEntryAdapter extends TypeAdapter<StatEntry> {
       id: fields[0] as String,
       cardType: fields[1] as String,
       name: fields[2] as String,
-      amount: (fields[3] as num).toDouble(),
+      amount: StatEntry._parseHiveAmount(fields[3]),
       createdAt: DateTime.fromMillisecondsSinceEpoch(fields[4] as int),
       updatedAt: DateTime.fromMillisecondsSinceEpoch(fields[5] as int),
       syncStatus: fields[6] as String? ?? 'pending',

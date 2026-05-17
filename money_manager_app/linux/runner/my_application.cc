@@ -52,12 +52,7 @@ static void my_application_activate(GApplication* application) {
     gtk_window_set_title(window, "Money Manager");
   }
 
-  g_autofree gchar* icon_path = g_build_filename(
-      g_get_current_dir(), "data", "flutter_assets", "assets", "icons",
-      "app_icon.png", nullptr);
-  if (g_file_test(icon_path, G_FILE_TEST_EXISTS)) {
-    gtk_window_set_icon_from_file(window, icon_path, nullptr);
-  }
+  gtk_window_set_icon_name(window, "money-manager");
 
   gtk_window_set_default_size(window, 1280, 720);
 

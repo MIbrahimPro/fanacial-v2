@@ -59,6 +59,15 @@ class Transaction {
     throw FormatException('Invalid amount value: $value');
   }
 
+  static double _parseHiveAmount(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    return 0;
+  }
+
   Transaction copyWith({
     String? id,
     String? type,
@@ -104,7 +113,7 @@ class TransactionAdapter extends TypeAdapter<Transaction> {
       type: fields[1] as String,
       name: fields[2] as String,
       description: fields[3] as String?,
-      amount: (fields[4] as num).toDouble(),
+      amount: Transaction._parseHiveAmount(fields[4]),
       tagId: fields[5] as String,
       date: DateTime.fromMillisecondsSinceEpoch(fields[6] as int),
       createdAt: DateTime.fromMillisecondsSinceEpoch(fields[7] as int),

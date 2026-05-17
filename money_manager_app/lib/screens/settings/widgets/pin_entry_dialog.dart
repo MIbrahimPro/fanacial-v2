@@ -28,6 +28,7 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
     final theme = Theme.of(context);
 
     return AlertDialog(
+      scrollable: true,
       title: const Text('Enter PIN'),
       content: Column(
         mainAxisSize: MainAxisSize.min,

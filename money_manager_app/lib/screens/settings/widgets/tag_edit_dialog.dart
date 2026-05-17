@@ -58,6 +58,7 @@ class _TagEditDialogState extends State<TagEditDialog> {
         StorageService.instance.getAllTags().length == 1;
 
     return AlertDialog(
+      scrollable: true,
       title: Text(_isEditing ? 'Edit Tag' : 'Add Tag'),
       content: Form(
         key: _formKey,

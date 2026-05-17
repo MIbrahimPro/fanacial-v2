@@ -21,7 +21,7 @@ mkdir -p "$PKG_DIR/usr/share/icons/hicolor/256x256/apps"
 mkdir -p "$OUT_DIR"
 
 cp -r "$BUILD_DIR"/* "$PKG_DIR$APP_DIR/"
-cp "$ROOT_DIR/packaging/linux/money-manager.desktop" "$PKG_DIR/usr/share/applications/money-manager.desktop"
+cp "$ROOT_DIR/packaging/linux/com.mibrahimpro.moneymanager.desktop" "$PKG_DIR/usr/share/applications/com.mibrahimpro.moneymanager.desktop"
 cp "$ROOT_DIR/linux/runner/resources/app_icon.png" "$PKG_DIR/usr/share/icons/hicolor/256x256/apps/money-manager.png"
 
 cat > "$PKG_DIR/DEBIAN/control" <<EOF

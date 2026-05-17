@@ -207,7 +207,9 @@ class _MonthlyLineGraphPainter extends CustomPainter {
 
   List<_YLabel> _generateYLabels() {
     final range = yMax - yMin;
-    if (range <= 0) return [];
+    if (range <= 0) {
+      return [];
+    }
     final step = _niceStep(range / 4);
     final labels = <_YLabel>[];
     
@@ -223,19 +225,28 @@ class _MonthlyLineGraphPainter extends CustomPainter {
     final exp = (log(raw) / ln10).floor();
     final frac = raw / pow(10, exp);
     double nice;
-    if (frac <= 1.5) nice = 1;
-    else if (frac <= 3.5) nice = 2;
-    else if (frac <= 7.5) nice = 5;
-    else nice = 10;
+    if (frac <= 1.5) {
+      nice = 1;
+    } else if (frac <= 3.5) {
+      nice = 2;
+    } else if (frac <= 7.5) {
+      nice = 5;
+    } else {
+      nice = 10;
+    }
     return nice * pow(10, exp);
   }
 
   String _formatAmount(double v) {
     final absV = v.abs();
     String s;
-    if (absV >= 1000000) s = '${(absV / 1000000).toStringAsFixed(1)}M';
-    else if (absV >= 1000) s = '${(absV / 1000).toStringAsFixed(0)}K';
-    else s = absV.toStringAsFixed(0);
+    if (absV >= 1000000) {
+      s = '${(absV / 1000000).toStringAsFixed(1)}M';
+    } else if (absV >= 1000) {
+      s = '${(absV / 1000).toStringAsFixed(0)}K';
+    } else {
+      s = absV.toStringAsFixed(0);
+    }
     return v < 0 ? '-$s' : s;
   }
 

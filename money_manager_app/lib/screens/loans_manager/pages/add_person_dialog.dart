@@ -42,6 +42,7 @@ class _AddPersonDialogState extends State<AddPersonDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: Text(_isEditing ? 'Edit Person' : 'Add Person'),
       content: Form(
         key: _formKey,
