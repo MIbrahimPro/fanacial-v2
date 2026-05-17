@@ -42,13 +42,22 @@ class Transaction {
         type: json['type'] as String,
         name: json['name'] as String,
         description: json['description'] as String?,
-        amount: (json['amount'] as num).toDouble(),
+        amount: _parseAmount(json['amount']),
         tagId: (json['tag_id'] ?? json['tagId']) as String,
         date: DateTime.parse(json['date'] as String),
         createdAt: DateTime.parse(json['created_at'] ?? json['createdAt']),
         updatedAt: DateTime.parse(json['updated_at'] ?? json['updatedAt']),
         syncStatus: json['syncStatus'] as String? ?? 'synced',
       );
+
+  static double _parseAmount(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    throw FormatException('Invalid amount value: $value');
+  }
 
   Transaction copyWith({
     String? id,

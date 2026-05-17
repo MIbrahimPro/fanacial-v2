@@ -37,7 +37,7 @@ class Loan {
   factory Loan.fromJson(Map<String, dynamic> json) => Loan(
         id: json['id'] as String,
         personId: (json['person_id'] ?? json['personId']) as String,
-        amount: (json['amount'] as num).toDouble(),
+        amount: _parseAmount(json['amount']),
         type: json['type'] as String,
         description: json['description'] as String?,
         date: DateTime.parse(json['date'] as String),
@@ -45,6 +45,15 @@ class Loan {
         updatedAt: DateTime.parse(json['updated_at'] ?? json['updatedAt']),
         syncStatus: json['syncStatus'] as String? ?? 'synced',
       );
+
+  static double _parseAmount(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    throw FormatException('Invalid amount value: $value');
+  }
 
   Loan copyWith({
     String? id,

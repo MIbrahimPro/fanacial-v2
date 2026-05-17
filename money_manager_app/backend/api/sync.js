@@ -61,7 +61,7 @@ module.exports = async (req, res) => {
             [last_sync]
           )
         : await pool.query(`SELECT * FROM ${table} ORDER BY updated_at ASC`);
-      pullData[table] = result.rows;
+      pullData[table] = result.rows.map((row) => normalizeRow(table, row));
     }
 
     const nowResult = await pool.query('SELECT NOW() AS sync_time');
@@ -90,4 +90,11 @@ async function _upsert(table, item, pool) {
      ON CONFLICT (id) DO UPDATE SET ${updates}`,
     values
   );
+}
+
+function normalizeRow(table, row) {
+  if ((table === 'transactions' || table === 'stat_entries' || table === 'loans') && typeof row.amount === 'string') {
+    return { ...row, amount: Number(row.amount) };
+  }
+  return row;
 }

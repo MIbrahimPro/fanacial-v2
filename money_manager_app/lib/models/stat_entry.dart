@@ -32,11 +32,20 @@ class StatEntry {
         id: json['id'] as String,
         cardType: (json['card_type'] ?? json['cardType']) as String,
         name: json['name'] as String,
-        amount: (json['amount'] as num).toDouble(),
+        amount: _parseAmount(json['amount']),
         createdAt: DateTime.parse(json['created_at'] ?? json['createdAt']),
         updatedAt: DateTime.parse(json['updated_at'] ?? json['updatedAt']),
         syncStatus: json['syncStatus'] as String? ?? 'synced',
       );
+
+  static double _parseAmount(dynamic value) {
+    if (value is num) return value.toDouble();
+    if (value is String) {
+      final parsed = double.tryParse(value);
+      if (parsed != null) return parsed;
+    }
+    throw FormatException('Invalid amount value: $value');
+  }
 
   StatEntry copyWith({
     String? id,
