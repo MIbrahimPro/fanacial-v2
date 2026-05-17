@@ -122,3 +122,7 @@
 - [x] 12.6 Generate and wire custom Linux app icon (`assets/icons/app_icon.png`)
 - [x] 12.7 Add Debian package build script and desktop entry (`money-manager_1.0.0_amd64.deb`)
 - [x] 12.8 Verify with `flutter test`, `flutter analyze`, `flutter build apk --release`, and Linux release/deb build
+- [x] 12.9 Harden model and Hive amount parsing for PostgreSQL decimal strings
+- [x] 12.10 Add sync parsing regression tests for transaction/stat/loan decimal string amounts
+- [x] 12.11 Fix keyboard-safe input sheets/dialogs for transaction, stats, loans, tags, person, and PIN flows
+- [x] 12.12 Fix Linux taskbar icon matching via app-id desktop entry filename
