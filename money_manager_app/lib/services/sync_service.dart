@@ -60,13 +60,28 @@ class SyncService extends ChangeNotifier {
 
     try {
       final records = _buildPendingRecords();
-      await _api.sync(
+      final response = await _api.sync(
         lastSync: _lastSyncTime?.toIso8601String(),
         records: records.isNotEmpty ? records : null,
       );
 
-      _updateSyncedStatus();
-      _updateLastSyncTime();
+      // Process pulled data from server
+      final pullData = response['data'] as Map<String, dynamic>?;
+      if (pullData != null) {
+        _applyPullData(pullData);
+      }
+
+      final conflicts = (response['conflicts'] as List?)
+              ?.whereType<Map>()
+              .map((e) => Map<String, dynamic>.from(e))
+              .toList() ??
+          const <Map<String, dynamic>>[];
+      if (conflicts.isNotEmpty) {
+        debugPrint('Sync: ${conflicts.length} conflict(s), server version kept');
+      }
+
+      _updateSyncedStatus(conflicts);
+      _updateLastSyncTime(response['sync_time'] as String?);
 
       _isSyncing = false;
       notifyListeners();
@@ -78,6 +93,74 @@ class SyncService extends ChangeNotifier {
         throw StateError('AUTH_REQUIRED');
       }
       rethrow;
+    }
+  }
+
+  void _applyPullData(Map<String, dynamic> pullData) {
+    // Transactions
+    final txs = pullData['transactions'] as List?;
+    if (txs != null) {
+      for (final txJson in txs) {
+        final tx = Transaction.fromJson(txJson as Map<String, dynamic>);
+        final existing = _txBox.get(tx.id);
+        if (existing == null ||
+            existing.syncStatus != 'pending' ||
+            tx.updatedAt.isAfter(existing.updatedAt)) {
+          _txBox.put(tx.id, tx.copyWith(syncStatus: 'synced'));
+        }
+      }
+    }
+
+    // Stat entries
+    final stats = pullData['stat_entries'] as List?;
+    if (stats != null) {
+      for (final statJson in stats) {
+        final stat = StatEntry.fromJson(statJson as Map<String, dynamic>);
+        final existing = _statBox.get(stat.id);
+        if (existing == null ||
+            existing.syncStatus != 'pending' ||
+            stat.updatedAt.isAfter(existing.updatedAt)) {
+          _statBox.put(stat.id, stat.copyWith(syncStatus: 'synced'));
+        }
+      }
+    }
+
+    // Loans
+    final loans = pullData['loans'] as List?;
+    if (loans != null) {
+      for (final loanJson in loans) {
+        final loan = Loan.fromJson(loanJson as Map<String, dynamic>);
+        final existing = _loanBox.get(loan.id);
+        if (existing == null ||
+            existing.syncStatus != 'pending' ||
+            loan.updatedAt.isAfter(existing.updatedAt)) {
+          _loanBox.put(loan.id, loan.copyWith(syncStatus: 'synced'));
+        }
+      }
+    }
+
+    // People
+    final people = pullData['people'] as List?;
+    if (people != null) {
+      for (final personJson in people) {
+        final person = Person.fromJson(personJson as Map<String, dynamic>);
+        final existing = _personBox.get(person.id);
+        if (existing == null || person.updatedAt.isAfter(existing.updatedAt)) {
+          _personBox.put(person.id, person);
+        }
+      }
+    }
+
+    // Tags
+    final tags = pullData['tags'] as List?;
+    if (tags != null) {
+      for (final tagJson in tags) {
+        final tag = Tag.fromJson(tagJson as Map<String, dynamic>);
+        final existing = _tagBox.get(tag.id);
+        if (existing == null || tag.updatedAt.isAfter(existing.updatedAt)) {
+          _tagBox.put(tag.id, tag);
+        }
+      }
     }
   }
 
@@ -106,39 +189,64 @@ class SyncService extends ChangeNotifier {
       }
     }
     for (final person in _personBox.values) {
-      result['people']!.add(person.toJson());
+      if (_lastSyncTime == null || person.updatedAt.isAfter(_lastSyncTime!)) {
+        result['people']!.add(person.toJson());
+      }
     }
     for (final tag in _tagBox.values) {
-      result['tags']!.add(tag.toJson());
+      if (_lastSyncTime == null || tag.updatedAt.isAfter(_lastSyncTime!)) {
+        result['tags']!.add(tag.toJson());
+      }
     }
 
     result.removeWhere((_, v) => v.isEmpty);
     return result;
   }
 
-  void _updateSyncedStatus() {
+  void _updateSyncedStatus(List<Map<String, dynamic>> conflicts) {
+    final conflictTxIds = conflicts
+        .where((c) => c['table'] == 'transactions')
+        .map((c) => c['id'] as String)
+        .toSet();
+    final conflictStatIds = conflicts
+        .where((c) => c['table'] == 'stat_entries')
+        .map((c) => c['id'] as String)
+        .toSet();
+    final conflictLoanIds = conflicts
+        .where((c) => c['table'] == 'loans')
+        .map((c) => c['id'] as String)
+        .toSet();
+
     for (final key in _txBox.keys) {
       final tx = _txBox.get(key);
-      if (tx != null && tx.syncStatus == 'pending') {
+      if (tx != null &&
+          tx.syncStatus == 'pending' &&
+          !conflictTxIds.contains(tx.id)) {
         _txBox.put(key, tx.copyWith(syncStatus: 'synced'));
       }
     }
     for (final key in _statBox.keys) {
       final stat = _statBox.get(key);
-      if (stat != null && stat.syncStatus == 'pending') {
+      if (stat != null &&
+          stat.syncStatus == 'pending' &&
+          !conflictStatIds.contains(stat.id)) {
         _statBox.put(key, stat.copyWith(syncStatus: 'synced'));
       }
     }
     for (final key in _loanBox.keys) {
       final loan = _loanBox.get(key);
-      if (loan != null && loan.syncStatus == 'pending') {
+      if (loan != null &&
+          loan.syncStatus == 'pending' &&
+          !conflictLoanIds.contains(loan.id)) {
         _loanBox.put(key, loan.copyWith(syncStatus: 'synced'));
       }
     }
   }
 
-  void _updateLastSyncTime() {
-    _lastSyncTime = DateTime.now();
+  void _updateLastSyncTime(String? serverSyncTime) {
+    _lastSyncTime = serverSyncTime != null
+        ? DateTime.tryParse(serverSyncTime)?.toUtc() ?? DateTime.now().toUtc()
+        : DateTime.now().toUtc();
     _storage.updateSettings(
       _storage.getSettings().copyWith(lastSyncTime: _lastSyncTime),
     );

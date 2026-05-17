@@ -49,7 +49,7 @@ class LoansManagerScreen extends StatelessWidget {
               elevation: 1,
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
               clipBehavior: Clip.antiAlias,
-              child              : persons.isEmpty
+              child: persons.isEmpty
                   ? const EmptyState(
                       icon: Icons.people_outline,
                       title: 'No people yet',

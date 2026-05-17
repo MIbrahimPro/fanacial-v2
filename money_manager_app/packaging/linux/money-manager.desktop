@@ -1,0 +1,9 @@
+[Desktop Entry]
+Name=Money Manager
+Comment=Offline-first personal finance tracker
+Exec=/opt/money-manager/money-manager
+Icon=money-manager
+Terminal=false
+Type=Application
+Categories=Office;Finance;
+StartupWMClass=com.mibrahimpro.moneymanager

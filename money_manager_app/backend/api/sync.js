@@ -1,7 +1,7 @@
 const pool = require('./_db');
 const { requireAuth } = require('./_auth');
 
-const TABLES = ['transactions', 'stat_entries', 'loans', 'people', 'tags'];
+const TABLES = ['tags', 'people', 'transactions', 'stat_entries', 'loans'];
 
 module.exports = async (req, res) => {
   if (!requireAuth(req, res)) return;
@@ -54,20 +54,23 @@ module.exports = async (req, res) => {
 
     // --- PULL phase ---
     const pullData = {};
-    if (last_sync) {
-      for (const table of TABLES) {
-        const result = await pool.query(
-          `SELECT * FROM ${table} WHERE updated_at > $1 ORDER BY updated_at ASC`,
-          [last_sync]
-        );
-        pullData[table] = result.rows;
-      }
+    for (const table of TABLES) {
+      const result = last_sync
+        ? await pool.query(
+            `SELECT * FROM ${table} WHERE updated_at > $1 ORDER BY updated_at ASC`,
+            [last_sync]
+          )
+        : await pool.query(`SELECT * FROM ${table} ORDER BY updated_at ASC`);
+      pullData[table] = result.rows;
     }
+
+    const nowResult = await pool.query('SELECT NOW() AS sync_time');
 
     return res.status(200).json({
       success: true,
       data: pullData,
       conflicts,
+      sync_time: nowResult.rows[0].sync_time,
     });
   } catch (err) {
     console.error(err);

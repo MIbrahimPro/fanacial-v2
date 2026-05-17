@@ -65,8 +65,8 @@
 - [x] 7.5 Create `api/_db.js` and `api/_auth.js` shared modules
 - [x] 7.6 Create `setup.js` runner script + execute against Neon
 - [x] 7.7 Fix tag delete bug in TagListSection (use TagService instead of raw StorageService)
-- [ ] 7.8 Set Vercel env vars (DATABASE_URL, API_SECRET)
-- [ ] 7.9 Backend first deployment to Vercel
+- [x] 7.8 Set Vercel env vars (DATABASE_URL, API_SECRET, JWT_SECRET)
+- [x] 7.9 Backend first deployment to Vercel
 
 ## Phase 8: Sync Layer (Flutter Side)
 - [x] 8.1 Build `ApiService` (HTTP client for POST /api/sync)
@@ -92,7 +92,7 @@
 - [x] 10.1 Initialize git repo and commit
 - [x] 10.2 Create Vercel project and link to repo
 - [x] 10.3 Deploy backend
-- [x] 10.4 Connect Flutter app to production API (`financial-v2.vercel.app`)
+- [x] 10.4 Connect Flutter app to production API (`fanacial-v2.vercel.app`)
 - [x] 10.5 Final end-to-end test (sync API responds)
 
 ## Phase 11: Improvements & Fixes (May 2026)
@@ -112,3 +112,13 @@
 - [x] 11.14 Improve Dashboard visuals (Net Worth card)
 - [x] 11.15 Add Stats Comparison Bar
 - [x] 11.16 Desktop polish (sidebar, fonts, right-click)
+
+## Phase 12: Stability, Packaging & Sync Fixes (May 2026)
+- [x] 12.1 Fix sync foreign-key ordering bug (`transactions.tag_id`) by server push ordering
+- [x] 12.2 Return `sync_time` from backend and persist server-based incremental cursor
+- [x] 12.3 Reduce sync payload by only pushing changed `people` and `tags` since last sync
+- [x] 12.4 Refactor Loans summary cards for stable responsive layout (no flex/unbounded height issues)
+- [x] 12.5 Improve app naming (remove underscore label/title for Android + Linux window title)
+- [x] 12.6 Generate and wire custom Linux app icon (`assets/icons/app_icon.png`)
+- [x] 12.7 Add Debian package build script and desktop entry (`money-manager_1.0.0_amd64.deb`)
+- [x] 12.8 Verify with `flutter test`, `flutter analyze`, `flutter build apk --release`, and Linux release/deb build
