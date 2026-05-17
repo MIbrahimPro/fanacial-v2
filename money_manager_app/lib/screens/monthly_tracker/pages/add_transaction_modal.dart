@@ -26,21 +26,23 @@ class AddTransactionModal extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.92,
-      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => AnimatedPadding(
+      builder: (sheetContext) => AnimatedPadding(
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+          bottom: MediaQuery.viewInsetsOf(sheetContext).bottom,
         ),
-        child: AddTransactionModal(
-          initialType: initialType,
-          editTransaction: editTransaction,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.92,
+          ),
+          child: AddTransactionModal(
+            initialType: initialType,
+            editTransaction: editTransaction,
+          ),
         ),
       ),
     );
@@ -89,6 +91,7 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
     final theme = Theme.of(context);
 
     return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       child: Form(
         key: _formKey,
@@ -121,6 +124,7 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _nameController,
+              scrollPadding: const EdgeInsets.only(bottom: 160),
               decoration: const InputDecoration(
                 labelText: 'Name *',
                 hintText: 'e.g. Salary, Groceries',
@@ -134,6 +138,7 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
                 Expanded(
                   child: TextFormField(
                     controller: _amountController,
+                    scrollPadding: const EdgeInsets.only(bottom: 160),
                     decoration: const InputDecoration(
                       labelText: 'Amount *',
                       prefixText: '\$ ',
@@ -162,6 +167,7 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
             const SizedBox(height: 12),
             TextFormField(
               controller: _descriptionController,
+              scrollPadding: const EdgeInsets.only(bottom: 160),
               decoration: const InputDecoration(
                 labelText: 'Description (optional)',
                 hintText: 'Add details...',

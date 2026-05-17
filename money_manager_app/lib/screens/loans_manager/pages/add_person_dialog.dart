@@ -48,6 +48,7 @@ class _AddPersonDialogState extends State<AddPersonDialog> {
         key: _formKey,
         child: TextFormField(
           controller: _nameController,
+          scrollPadding: const EdgeInsets.only(bottom: 160),
           autofocus: true,
           decoration: const InputDecoration(
             labelText: 'Name *',

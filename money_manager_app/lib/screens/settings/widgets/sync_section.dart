@@ -133,12 +133,12 @@ class SyncSection extends StatelessWidget {
     );
     if (pin == null || !context.mounted) return;
     
-    final ok = await provider.loginAndEnable(pin);
-    if (!ok && context.mounted) {
+    final error = await provider.loginAndEnable(pin);
+    if (error != null && context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Incorrect PIN or Server Error')),
+        SnackBar(content: Text('Sync login failed: $error')),
       );
-    } else if (ok && context.mounted) {
+    } else if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Sync enabled')),
       );

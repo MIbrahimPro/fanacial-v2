@@ -48,6 +48,7 @@ class _PinEntryDialogState extends State<PinEntryDialog> {
                 child: TextField(
                   controller: _controllers[i],
                   focusNode: _focusNodes[i],
+                  scrollPadding: const EdgeInsets.only(bottom: 160),
                   textAlign: TextAlign.center,
                   obscureText: true,
                   keyboardType: TextInputType.number,

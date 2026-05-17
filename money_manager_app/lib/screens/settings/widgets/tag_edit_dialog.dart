@@ -69,6 +69,7 @@ class _TagEditDialogState extends State<TagEditDialog> {
             children: [
               TextFormField(
                 controller: _nameController,
+                scrollPadding: const EdgeInsets.only(bottom: 160),
                 decoration: const InputDecoration(labelText: 'Name *'),
                 validator: (v) =>
                     (v == null || v.trim().isEmpty) ? 'Name is required' : null,
@@ -103,6 +104,7 @@ class _TagEditDialogState extends State<TagEditDialog> {
               const SizedBox(height: 12),
               TextFormField(
                 controller: _hexController,
+                scrollPadding: const EdgeInsets.only(bottom: 160),
                 decoration: const InputDecoration(
                   labelText: 'Hex Color',
                   prefixText: '#',

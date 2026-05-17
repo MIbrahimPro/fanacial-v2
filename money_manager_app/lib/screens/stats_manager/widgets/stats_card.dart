@@ -214,21 +214,23 @@ class AddStatModal extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.92,
-      ),
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => AnimatedPadding(
+      builder: (sheetContext) => AnimatedPadding(
         duration: const Duration(milliseconds: 180),
         curve: Curves.easeOut,
         padding: EdgeInsets.only(
-          bottom: MediaQuery.of(context).viewInsets.bottom,
+          bottom: MediaQuery.viewInsetsOf(sheetContext).bottom,
         ),
-        child: AddStatModal(
-          initialCardType: initialCardType,
-          editEntry: editEntry,
+        child: ConstrainedBox(
+          constraints: BoxConstraints(
+            maxHeight: MediaQuery.sizeOf(sheetContext).height * 0.92,
+          ),
+          child: AddStatModal(
+            initialCardType: initialCardType,
+            editEntry: editEntry,
+          ),
         ),
       ),
     );
@@ -269,6 +271,7 @@ class _AddStatModalState extends State<AddStatModal> {
     final cardTitle = _cardTitle(cardType);
 
     return SingleChildScrollView(
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
       child: Form(
         key: _formKey,
@@ -293,12 +296,14 @@ class _AddStatModalState extends State<AddStatModal> {
             const SizedBox(height: 16),
             TextFormField(
               controller: _nameController,
+              scrollPadding: const EdgeInsets.only(bottom: 160),
               decoration: const InputDecoration(labelText: 'Name *'),
               validator: (v) => (v == null || v.trim().isEmpty) ? 'Name is required' : null,
             ),
             const SizedBox(height: 12),
             TextFormField(
               controller: _amountController,
+              scrollPadding: const EdgeInsets.only(bottom: 160),
               decoration: const InputDecoration(labelText: 'Amount *', prefixText: '\$ '),
               keyboardType: const TextInputType.numberWithOptions(decimal: true),
               validator: (v) {

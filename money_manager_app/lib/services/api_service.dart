@@ -17,20 +17,24 @@ class ApiService {
 
   Future<String> login(String pin) async {
     final uri = Uri.parse('$baseUrl/api/login');
-    final response = await http.post(
-      uri,
-      headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'pin': pin}),
-    );
+    http.Response response;
+    try {
+      response = await http.post(
+        uri,
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'pin': pin}),
+      ).timeout(const Duration(seconds: 15));
+    } catch (e) {
+      throw ApiException('Network error: $e');
+    }
 
-    final data = jsonDecode(response.body);
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
     if (data['success'] == true) {
       final token = data['token'] as String;
       setToken(token);
       return token;
-    } else {
-      throw ApiException(data['error'] ?? 'Login failed');
     }
+    throw ApiException(data['error'] as String? ?? 'Login failed');
   }
 
   Future<Map<String, dynamic>> sync({

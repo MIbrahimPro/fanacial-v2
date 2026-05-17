@@ -25,14 +25,14 @@ class SyncProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> loginAndEnable(String pin) async {
+  Future<String?> loginAndEnable(String pin) async {
     try {
       await _syncService.login(pin);
       _syncEnabled = true;
       notifyListeners();
-      return true;
+      return null;
     } catch (e) {
-      return false;
+      return e.toString();
     }
   }
 
