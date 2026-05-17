@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../../../providers/monthly_tracker_provider.dart';
-import 'transaction_list_item.dart';
+import '../../../utils/app_theme.dart';
 
 class MonthlySummaryCard extends StatelessWidget {
   const MonthlySummaryCard({super.key});
@@ -13,7 +13,7 @@ class MonthlySummaryCard extends StatelessWidget {
     final provider = context.watch<MonthlyTrackerProvider>();
     final fmt = NumberFormat('#,##0.00');
     final net = provider.monthlyNet;
-    final netColor = net >= 0 ? Colors.green : AppColors.outgoingRed;
+    final netColor = net >= 0 ? Colors.green : AppTheme.outgoingRed;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -26,7 +26,7 @@ class MonthlySummaryCard extends StatelessWidget {
             _Metric(
               label: 'Income',
               amount: provider.monthlyIncome,
-              color: AppColors.incomeBlue,
+              color: AppTheme.incomeBlue,
               icon: Icons.arrow_upward,
               fmt: fmt,
             ),
@@ -34,7 +34,7 @@ class MonthlySummaryCard extends StatelessWidget {
             _Metric(
               label: 'Outgoing',
               amount: provider.monthlyOutgoing,
-              color: AppColors.outgoingRed,
+              color: AppTheme.outgoingRed,
               icon: Icons.arrow_downward,
               fmt: fmt,
             ),

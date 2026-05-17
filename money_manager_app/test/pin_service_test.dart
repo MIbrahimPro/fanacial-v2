@@ -38,15 +38,15 @@ void main() {
 
     test('generateToken makes token valid', () async {
       await pinService.setPin('1234');
-      await pinService.generateToken();
+      await pinService.saveToken('test-jwt-token');
       expect(await pinService.isTokenValid(), true);
-      expect(await pinService.getToken(), isNotNull);
+      expect(await pinService.getToken(), 'test-jwt-token');
     });
 
     test('disableSync invalidates token', () async {
       await pinService.setPin('1234');
-      await pinService.generateToken();
-      await pinService.disableSync();
+      await pinService.saveToken('test-jwt-token');
+      await pinService.clearToken();
       expect(await pinService.isTokenValid(), false);
       expect(await pinService.getToken(), null);
     });

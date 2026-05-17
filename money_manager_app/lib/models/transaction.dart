@@ -31,11 +31,10 @@ class Transaction {
         'name': name,
         'description': description,
         'amount': amount,
-        'tagId': tagId,
+        'tag_id': tagId,
         'date': date.toIso8601String(),
-        'createdAt': createdAt.toIso8601String(),
-        'updatedAt': updatedAt.toIso8601String(),
-        'syncStatus': syncStatus,
+        'created_at': createdAt.toIso8601String(),
+        'updated_at': updatedAt.toIso8601String(),
       };
 
   factory Transaction.fromJson(Map<String, dynamic> json) => Transaction(
@@ -44,11 +43,11 @@ class Transaction {
         name: json['name'] as String,
         description: json['description'] as String?,
         amount: (json['amount'] as num).toDouble(),
-        tagId: json['tagId'] as String,
+        tagId: (json['tag_id'] ?? json['tagId']) as String,
         date: DateTime.parse(json['date'] as String),
-        createdAt: DateTime.parse(json['createdAt'] as String),
-        updatedAt: DateTime.parse(json['updatedAt'] as String),
-        syncStatus: json['syncStatus'] as String? ?? 'pending',
+        createdAt: DateTime.parse(json['created_at'] ?? json['createdAt']),
+        updatedAt: DateTime.parse(json['updated_at'] ?? json['updatedAt']),
+        syncStatus: json['syncStatus'] as String? ?? 'synced',
       );
 
   Transaction copyWith({

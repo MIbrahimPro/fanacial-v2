@@ -25,26 +25,25 @@ class Loan {
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'personId': personId,
+        'person_id': personId,
         'amount': amount,
         'type': type,
         'description': description,
         'date': date.toIso8601String(),
-        'createdAt': createdAt.toIso8601String(),
-        'updatedAt': updatedAt.toIso8601String(),
-        'syncStatus': syncStatus,
+        'created_at': createdAt.toIso8601String(),
+        'updated_at': updatedAt.toIso8601String(),
       };
 
   factory Loan.fromJson(Map<String, dynamic> json) => Loan(
         id: json['id'] as String,
-        personId: json['personId'] as String,
+        personId: (json['person_id'] ?? json['personId']) as String,
         amount: (json['amount'] as num).toDouble(),
         type: json['type'] as String,
         description: json['description'] as String?,
         date: DateTime.parse(json['date'] as String),
-        createdAt: DateTime.parse(json['createdAt'] as String),
-        updatedAt: DateTime.parse(json['updatedAt'] as String),
-        syncStatus: json['syncStatus'] as String? ?? 'pending',
+        createdAt: DateTime.parse(json['created_at'] ?? json['createdAt']),
+        updatedAt: DateTime.parse(json['updated_at'] ?? json['updatedAt']),
+        syncStatus: json['syncStatus'] as String? ?? 'synced',
       );
 
   Loan copyWith({

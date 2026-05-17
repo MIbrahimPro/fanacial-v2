@@ -40,7 +40,6 @@ class ApiService {
     if (_token == null) throw ApiException('Not logged in');
     
     final uri = Uri.parse('$baseUrl/api/sync');
-...
     final body = <String, dynamic>{};
     if (lastSync != null) body['last_sync'] = lastSync;
     if (records != null) body['records'] = records;

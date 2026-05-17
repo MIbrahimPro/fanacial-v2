@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/stats_provider.dart';
-import 'stats_manager/widgets/stats_card.dart';
+import 'stats_manager/widgets/stats_card.dart'; // Also exports AddStatModal
 
 class StatsManagerScreen extends StatelessWidget {
   const StatsManagerScreen({super.key});
@@ -15,10 +15,10 @@ class StatsManagerScreen extends StatelessWidget {
     final fmt = NumberFormat('#,##0.00');
     final netColor = net >= 0 ? Colors.green : const Color(0xFFE74C3C);
 
-    final assets = provider.getTotalForCardType('assets');
-    final liabilities = provider.getTotalForCardType('liabilities');
-    final income = provider.getTotalForCardType('income');
-    final expenses = provider.getTotalForCardType('expenses');
+    final assets = provider.getTotal('assets');
+    final liabilities = provider.getTotal('liabilities');
+    final income = provider.getTotal('income');
+    final expenses = provider.getTotal('expenses');
     final positive = assets + income;
     final negative = liabilities + expenses;
 

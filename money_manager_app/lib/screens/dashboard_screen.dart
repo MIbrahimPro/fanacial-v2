@@ -53,8 +53,6 @@ class _NetWorthCard extends StatelessWidget {
     final totalNet = netStats + netLoans;
     
     final fmt = NumberFormat('#,##0.00');
-    final color = totalNet >= 0 ? Colors.green : const Color(0xFFE74C3C);
-
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.fromLTRB(16, 12, 16, 4),

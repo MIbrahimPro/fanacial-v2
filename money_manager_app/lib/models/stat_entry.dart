@@ -21,22 +21,21 @@ class StatEntry {
 
   Map<String, dynamic> toJson() => {
         'id': id,
-        'cardType': cardType,
+        'card_type': cardType,
         'name': name,
         'amount': amount,
-        'createdAt': createdAt.toIso8601String(),
-        'updatedAt': updatedAt.toIso8601String(),
-        'syncStatus': syncStatus,
+        'created_at': createdAt.toIso8601String(),
+        'updated_at': updatedAt.toIso8601String(),
       };
 
   factory StatEntry.fromJson(Map<String, dynamic> json) => StatEntry(
         id: json['id'] as String,
-        cardType: json['cardType'] as String,
+        cardType: (json['card_type'] ?? json['cardType']) as String,
         name: json['name'] as String,
         amount: (json['amount'] as num).toDouble(),
-        createdAt: DateTime.parse(json['createdAt'] as String),
-        updatedAt: DateTime.parse(json['updatedAt'] as String),
-        syncStatus: json['syncStatus'] as String? ?? 'pending',
+        createdAt: DateTime.parse(json['created_at'] ?? json['createdAt']),
+        updatedAt: DateTime.parse(json['updated_at'] ?? json['updatedAt']),
+        syncStatus: json['syncStatus'] as String? ?? 'synced',
       );
 
   StatEntry copyWith({

@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 
 import '../../../models/index.dart';
 import '../../../providers/monthly_tracker_provider.dart';
-import '../widgets/transaction_list_item.dart';
+import '../../../providers/navigation_provider.dart';
+import '../../../utils/app_theme.dart';
 
 class AddTransactionModal extends StatefulWidget {
   final String? initialType;
@@ -171,7 +172,7 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
             TextButton.icon(
               onPressed: () {
                 Navigator.pop(context);
-                context.read<NavigationProvider>().goToTab(4); // Settings tab
+                context.read<NavigationProvider>().goToTab(4);
               },
               icon: const Icon(Icons.tune, size: 16),
               label: const Text('Manage Tags'),
@@ -186,7 +187,7 @@ class _AddTransactionModalState extends State<AddTransactionModal> {
               child: ElevatedButton(
                 onPressed: _isLoading ? null : _submit,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.incomeBlue, // Changed from AppColors.incomeBlue
+                  backgroundColor: AppTheme.incomeBlue,
                   foregroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
@@ -296,7 +297,7 @@ class _TypeSelector extends StatelessWidget {
             label: 'Income',
             icon: Icons.trending_up,
             isSelected: selectedType == 'income',
-            selectedColor: AppColors.incomeBlue,
+            selectedColor: AppTheme.incomeBlue,
             onTap: () => onChanged('income'),
           ),
         ),
@@ -306,7 +307,7 @@ class _TypeSelector extends StatelessWidget {
             label: 'Outgoing',
             icon: Icons.trending_down,
             isSelected: selectedType == 'outgoing',
-            selectedColor: AppColors.outgoingRed,
+            selectedColor: AppTheme.outgoingRed,
             onTap: () => onChanged('outgoing'),
           ),
         ),

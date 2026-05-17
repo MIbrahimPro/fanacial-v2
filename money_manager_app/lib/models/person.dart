@@ -16,15 +16,15 @@ class Person {
   Map<String, dynamic> toJson() => {
         'id': id,
         'name': name,
-        'createdAt': createdAt.toIso8601String(),
-        'updatedAt': updatedAt.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
+        'updated_at': updatedAt.toIso8601String(),
       };
 
   factory Person.fromJson(Map<String, dynamic> json) => Person(
         id: json['id'] as String,
         name: json['name'] as String,
-        createdAt: DateTime.parse(json['createdAt'] as String),
-        updatedAt: DateTime.parse(json['updatedAt'] as String),
+        createdAt: DateTime.parse(json['created_at'] ?? json['createdAt']),
+        updatedAt: DateTime.parse(json['updated_at'] ?? json['updatedAt']),
       );
 
   Person copyWith({

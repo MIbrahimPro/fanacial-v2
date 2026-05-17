@@ -21,7 +21,7 @@ class SyncProvider extends ChangeNotifier {
   Future<void> init() async {
     final token = await _pinService.getToken();
     _syncEnabled = token != null;
-    _hasPin = true; // Pin is seeded on server, so we always "have" a way to sync
+    _hasPin = await _pinService.hasPin() || token != null;
     notifyListeners();
   }
 

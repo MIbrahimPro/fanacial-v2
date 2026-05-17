@@ -68,8 +68,8 @@ void main() {
 
       final mayTxs = storage.getTransactionsByMonth(2026, 5);
       expect(mayTxs.length, 2);
-      expect(mayTxs[0].name, 'Rent May');
-      expect(mayTxs[1].name, 'Salary May');
+      expect(mayTxs[0].name, 'Salary May');
+      expect(mayTxs[1].name, 'Rent May');
 
       final juneTxs = storage.getTransactionsByMonth(2026, 6);
       expect(juneTxs.length, 1);

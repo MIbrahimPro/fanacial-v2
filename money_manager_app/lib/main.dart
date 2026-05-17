@@ -190,7 +190,7 @@ class _MainShellState extends State<MainShell> {
                     _pageController.jumpToPage(i);
                   },
                   labelType: NavigationRailLabelType.all,
-                  backgroundColor: themeMode == ThemeMode.dark ? AppTheme.darkSurface : AppTheme.creamyYellowLight,
+                  backgroundColor: context.watch<ThemeProvider>().themeMode == ThemeMode.dark ? AppTheme.darkSurface : AppTheme.creamyYellowLight,
                   useIndicator: true,
                   indicatorColor: AppTheme.accentGold.withValues(alpha: 0.2),
                   leading: const Padding(

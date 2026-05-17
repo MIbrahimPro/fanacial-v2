@@ -5,8 +5,8 @@ import 'package:provider/provider.dart';
 import '../../../models/index.dart';
 import '../../../providers/monthly_tracker_provider.dart';
 import '../../../services/storage_service.dart';
+import '../../../utils/app_theme.dart';
 import '../../../utils/contrast_utils.dart';
-import '../widgets/transaction_list_item.dart';
 import 'add_transaction_modal.dart';
 
 class TransactionDetailPage extends StatefulWidget {
@@ -43,7 +43,7 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
           orElse: () => null,
         );
     final isIncome = tx.type == 'income';
-    final amountColor = isIncome ? AppColors.incomeBlue : AppColors.outgoingRed;
+    final amountColor = isIncome ? AppTheme.incomeBlue : AppTheme.outgoingRed;
     final fmt = NumberFormat('#,##0.00');
     final dateFmt = DateFormat('d MMM yyyy');
     final dateTimeFmt = DateFormat('d MMM yyyy, h:mm a');
@@ -113,8 +113,8 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                       icon: const Icon(Icons.edit_outlined),
                       label: const Text('Edit'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.incomeBlue,
-                        side: const BorderSide(color: AppColors.incomeBlue),
+                        foregroundColor: AppTheme.incomeBlue,
+                        side: BorderSide(color: AppTheme.incomeBlue),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),
@@ -131,8 +131,8 @@ class _TransactionDetailPageState extends State<TransactionDetailPage> {
                       icon: const Icon(Icons.delete_outline),
                       label: const Text('Delete'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: AppColors.outgoingRed,
-                        side: const BorderSide(color: AppColors.outgoingRed),
+                        foregroundColor: AppTheme.outgoingRed,
+                        side: BorderSide(color: AppTheme.outgoingRed),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
                         ),

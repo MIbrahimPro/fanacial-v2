@@ -19,16 +19,16 @@ class Tag {
         'id': id,
         'name': name,
         'color': color,
-        'createdAt': createdAt.toIso8601String(),
-        'updatedAt': updatedAt.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
+        'updated_at': updatedAt.toIso8601String(),
       };
 
   factory Tag.fromJson(Map<String, dynamic> json) => Tag(
         id: json['id'] as String,
         name: json['name'] as String,
         color: json['color'] as String,
-        createdAt: DateTime.parse(json['createdAt'] as String),
-        updatedAt: DateTime.parse(json['updatedAt'] as String),
+        createdAt: DateTime.parse(json['created_at'] ?? json['createdAt']),
+        updatedAt: DateTime.parse(json['updated_at'] ?? json['updatedAt']),
       );
 
   Tag copyWith({
